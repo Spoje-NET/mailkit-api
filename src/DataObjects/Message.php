@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Igloonet\MailkitApi\DataObjects;
 
@@ -16,7 +16,7 @@ class Message
 	/** @var string|null */
 	private $body = null;
 
-	/** @var array */
+	/** @var mixed[] */
 	private $templateVars = [];
 
 	/** @var array|Attachment[] */
@@ -37,6 +37,7 @@ class Message
 
 	/**
 	 * @param User $user
+	 *
 	 * @return $this
 	 */
 	public function setUser(User $user): self
@@ -48,6 +49,7 @@ class Message
 
 	/**
 	 * @param string|null $subject
+	 *
 	 * @return $this
 	 */
 	public function setSubject(?string $subject): self
@@ -67,6 +69,7 @@ class Message
 
 	/**
 	 * @param string|null $body
+	 *
 	 * @return $this
 	 */
 	public function setBody(?string $body): self
@@ -85,7 +88,8 @@ class Message
 	}
 
 	/**
-	 * @param array $templateVars
+	 * @param mixed[] $templateVars
+	 *
 	 * @return $this
 	 */
 	public function setTemplateVars(array $templateVars): self
@@ -98,6 +102,7 @@ class Message
 	/**
 	 * @param string $varName
 	 * @param mixed $value
+	 *
 	 * @return $this
 	 */
 	public function setTemplateVar(string $varName, $value): self
@@ -108,7 +113,7 @@ class Message
 	}
 
 	/**
-	 * @return array
+	 * @return mixed[]
 	 */
 	public function getTemplateVars(): array
 	{
@@ -117,13 +122,14 @@ class Message
 
 	/**
 	 * @param Attachment $attachment
+	 *
 	 * @return $this
 	 */
 	public function addAttachment(Attachment $attachment): self
 	{
 		$name = $attachment->getName();
 
-		if (isset($this->attachments[$name])) {
+		if ($name !== null && isset($this->attachments[$name])) {
 			throw new DuplicateAttachmentNameException($name);
 		}
 
@@ -133,7 +139,7 @@ class Message
 	}
 
 	/**
-	 * @return array|Attachment[]
+	 * @return Attachment[]
 	 */
 	public function getAttachments(): array
 	{

@@ -1,35 +1,38 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Igloonet\MailkitApi\Managers;
 
+use Igloonet\MailkitApi\Consistence\Enum\Exceptions\InvalidEnumValueException;
 use Igloonet\MailkitApi\DataObjects\SubscribeWebHook;
 use Igloonet\MailkitApi\DataObjects\UnsubscribeWebHook;
+use Igloonet\MailkitApi\Helpers\Strict;
 use Nette\Utils\Json;
 use Nette\Utils\JsonException;
 
 class WebHooksManager
 {
-	public function processSubscribe($content)
+	public function processSubscribe(string $content): ?SubscribeWebHook
 	{
 		try {
-			$responseData = Json::decode($content, Json::FORCE_ARRAY);
-			$subscribe = SubscribeWebHook::fromArray($responseData);
+			$responseData = Strict::array(Json::decode($content, Json::FORCE_ARRAY));
 
-			return $subscribe;
+			return SubscribeWebHook::fromArray($responseData);
 		} catch (JsonException $e) {
 		}
 
 		return null;
 	}
 
-	public function processUnsubscribe($content)
+	/**
+	 * @throws InvalidEnumValueException
+	 */
+	public function processUnsubscribe(string $content): ?UnsubscribeWebHook
 	{
 		try {
-			$responseData = Json::decode($content, Json::FORCE_ARRAY);
-			$unsubscribe = UnsubscribeWebHook::fromArray($responseData);
+			$responseData = Strict::array(Json::decode($content, Json::FORCE_ARRAY));
 
-			return $unsubscribe;
+			return UnsubscribeWebHook::fromArray($responseData);
 		} catch (JsonException $e) {
 		}
 

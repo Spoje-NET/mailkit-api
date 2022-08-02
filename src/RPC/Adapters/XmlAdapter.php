@@ -19,6 +19,11 @@ class XmlAdapter extends BaseAdapter
 	/** @var string  */
 	private $encoding = 'UTF-8';
 
+	/**
+	 * @param string $clientId
+	 * @param string $clientMd5
+	 * @param string|null $encoding
+	 */
 	public function __construct(string $clientId, string $clientMd5, string $encoding = null)
 	{
 		parent::__construct($clientId, $clientMd5);
@@ -37,8 +42,8 @@ class XmlAdapter extends BaseAdapter
 
 	/**
 	 * @param string $method
-	 * @param array $params
-	 * @param array $possibleErrors
+	 * @param mixed[] $params
+	 * @param mixed[] $possibleErrors
 	 * @return IRpcResponse
 	 */
 	public function sendRequest(string $method, array $params, array $possibleErrors): IRpcResponse
@@ -100,8 +105,8 @@ class XmlAdapter extends BaseAdapter
 	}
 
 	/**
-	 * @param array $params
-	 * @return array
+	 * @param mixed[] $params
+	 * @return mixed[]
 	 */
 	private function prepareRequestData(array $params): array
 	{
@@ -113,7 +118,8 @@ class XmlAdapter extends BaseAdapter
 
 	/**
 	 * @param string $request
-	 * @return array
+	 *
+	 * @return string[][]
 	 */
 	protected function getStreamContextOptions(string $request): array
 	{
@@ -128,8 +134,8 @@ class XmlAdapter extends BaseAdapter
 
 	/**
 	 * @param string $method
-	 * @param array $requestData
-	 * @param array $options
+	 * @param mixed[] $requestData
+	 * @param mixed[] $options
 	 * @return string|false
 	 */
 	protected function getContent(string $method, array $requestData, array $options)
@@ -138,8 +144,6 @@ class XmlAdapter extends BaseAdapter
 
 		$context = stream_context_create($this->getStreamContextOptions($request));
 
-		$content = @file_get_contents($this->apiUrl, false, $context);
-
-		return $content;
+		return @file_get_contents($this->apiUrl, false, $context);
 	}
 }

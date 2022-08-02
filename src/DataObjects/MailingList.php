@@ -1,11 +1,11 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Igloonet\MailkitApi\DataObjects;
 
 use Igloonet\MailkitApi\DataObjects\Enums\MailingListStatus;
 
-class MailingList
+final class MailingList
 {
 	/** @var int|null */
 	private $id = null;
@@ -21,6 +21,7 @@ class MailingList
 
 	/**
 	 * @param int|null $id
+	 *
 	 * @return $this
 	 */
 	public function setId(?int $id): self
@@ -40,11 +41,15 @@ class MailingList
 
 	/**
 	 * @param string|null $name
+	 *
 	 * @return $this
 	 */
 	public function setName(?string $name): self
 	{
-		$this->name = trim($name ?? '') === '' ? null : trim($name);
+		if ($name === null) {
+			$name = '';
+		}
+		$this->name = trim($name) === '' ? null : trim($name);
 
 		return $this;
 	}
@@ -59,6 +64,7 @@ class MailingList
 
 	/**
 	 * @param MailingListStatus|null $status
+	 *
 	 * @return $this
 	 */
 	public function setStatus(?MailingListStatus $status): self
@@ -78,11 +84,15 @@ class MailingList
 
 	/**
 	 * @param string|null $description
+	 *
 	 * @return $this
 	 */
 	public function setDescription(?string $description): self
 	{
-		$this->description = trim($description ?? '') === '' ? null : trim($description);
+		if ($description === null) {
+			$description = '';
+		}
+		$this->description = trim($description) === '' ? null : trim($description);
 
 		return $this;
 	}
@@ -100,11 +110,12 @@ class MailingList
 	 * @param string $name
 	 * @param MailingListStatus $status
 	 * @param string $description
+	 *
 	 * @return MailingList
 	 */
 	public static function create(int $id, string $name, MailingListStatus $status, string $description): self
 	{
-		$mailingList = new static();
+		$mailingList = new self();
 
 		$mailingList->setId($id);
 		$mailingList->setName($name);

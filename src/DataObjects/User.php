@@ -543,7 +543,7 @@ class User
 	}
 
 	/**
-	 * @param array $customFields
+	 * @param mixed[] $customFields
 	 * @return $this
 	 * @throws InvalidCustomFieldNumberException
 	 */

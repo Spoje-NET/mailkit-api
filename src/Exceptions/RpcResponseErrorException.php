@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Igloonet\MailkitApi\Exceptions;
 
@@ -20,8 +20,8 @@ abstract class RpcResponseErrorException extends \RuntimeException implements Ma
 		$this->rpcResponse = $rpcResponse;
 
 		if (trim($message) === '') {
-			$message = $rpcResponse->getError();
-			$code = $rpcResponse->getErrorCode();
+			$message = $rpcResponse->getError() ?? '';
+			$code = $rpcResponse->getErrorCode() ?? 0;
 		}
 
 		parent::__construct($message, $code, $previous);

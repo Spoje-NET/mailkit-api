@@ -6,9 +6,9 @@ namespace Igloonet\MailkitApi\RPC\Responses;
 use Igloonet\MailkitApi\RPC\Exceptions\InvalidDataTypeException;
 use Igloonet\MailkitApi\RPC\Exceptions\UnsupportedDataTypeException;
 
-class XmlSuccessRpcResponse extends SuccessRpcResponse
+final class XmlSuccessRpcResponse extends SuccessRpcResponse
 {
-	/** @var array|null */
+	/** @var mixed[]|null */
 	protected $arrayValue = null;
 
 	/** @var string|null */
@@ -20,6 +20,12 @@ class XmlSuccessRpcResponse extends SuccessRpcResponse
 	/** @var bool|null */
 	protected $booleanValue = null;
 
+	/**
+	 * @param mixed[]|null $arrayValue
+	 * @param string|null $stringValue
+	 * @param int|null $integerValue
+	 * @param bool|null $booleanValue
+	 */
 	public function __construct(?array $arrayValue, ?string $stringValue, ?int $integerValue, ?bool $booleanValue)
 	{
 		$this->arrayValue = $arrayValue;
@@ -29,20 +35,20 @@ class XmlSuccessRpcResponse extends SuccessRpcResponse
 	}
 
 	/**
-	 * @param array|string|int|bool $data
+	 * @param mixed[]|string|int|bool $data
 	 * @return XmlSuccessRpcResponse
 	 * @throws UnsupportedDataTypeException
 	 */
 	public static function createFromResponseData($data): self
 	{
 		if (is_array($data)) {
-			return new static($data, null, null, null);
+			return new self($data, null, null, null);
 		} elseif (is_string($data)) {
-			return new static(null, $data, null, null);
+			return new self(null, $data, null, null);
 		} elseif (is_numeric($data)) {
-			return new static(null, null, $data, null);
+			return new self(null, null, $data, null);
 		} elseif (is_bool($data)) {
-			return new static(null, null, null, $data);
+			return new self(null, null, null, $data);
 		} else {
 			throw new UnsupportedDataTypeException(sprintf(
 				'%s does not support data type %s. Supports only array, string or integer data type.',
@@ -53,7 +59,7 @@ class XmlSuccessRpcResponse extends SuccessRpcResponse
 	}
 
 	/**
-	 * @return array
+	 * @return mixed[]
 	 * @throws InvalidDataTypeException
 	 */
 	public function getArrayValue(): array
@@ -117,7 +123,7 @@ class XmlSuccessRpcResponse extends SuccessRpcResponse
 	}
 
 	/**
-	 * @return array
+	 * @return mixed[]
 	 * @throws InvalidDataTypeException
 	 */
 	public function getArrayData(): array

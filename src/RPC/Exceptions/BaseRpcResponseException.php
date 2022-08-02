@@ -10,6 +10,14 @@ abstract class BaseRpcResponseException extends BaseRpcException
 	/** @var mixed */
 	private $responseData = null;
 
+	/**
+	 * @param string $method
+	 * @param mixed[] $requestData
+	 * @param mixed[] $responseData
+	 * @param string $message
+	 * @param int $code
+	 * @param Throwable|null $previous
+	 */
 	public function __construct(
 		string $method,
 		array $requestData,

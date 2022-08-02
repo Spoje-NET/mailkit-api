@@ -12,8 +12,8 @@ class XmlAdapterMock extends \Igloonet\MailkitApi\RPC\Adapters\XmlAdapter
 
 	/**
 	 * @param string $method
-	 * @param array $requestData
-	 * @param array $options
+	 * @param mixed[] $requestData
+	 * @param mixed[] $options
 	 * @return bool|string
 	 */
 	protected function getContent(string $method, array $requestData, array $options)
@@ -22,6 +22,6 @@ class XmlAdapterMock extends \Igloonet\MailkitApi\RPC\Adapters\XmlAdapter
 			return @file_get_contents(__DIR__ . '/api-data/xml/' . $method . '.' . $requestData[2] . '.xml');
 		}
 
-		return @file_get_contents(__DIR__ . '/api-data/xml/' . $method .'.xml');;
+		return @file_get_contents(__DIR__ . '/api-data/xml/' . $method .'.xml');
 	}
 }

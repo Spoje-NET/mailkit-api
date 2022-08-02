@@ -1,12 +1,13 @@
 <?php
-declare(strict_types=1);
+/** @noinspection ALL */
+declare(strict_types = 1);
 
 namespace Igloonet\MailkitApi\DataObjects;
 
 use Igloonet\MailkitApi\DataObjects\Enums\Gender;
 use Nette\Utils\DateTime;
 
-class SubscribeWebHook
+final class SubscribeWebHook
 {
 	/** @var User|null */
 	private $user = null;
@@ -47,18 +48,30 @@ class SubscribeWebHook
 	/** @var string|null */
 	private $urlCode = null;
 
-	/** $jsonContent */
+	/**  @var mixed[] $jsonContent */
 	private $jsonContent = null;
 
-	private function __construct(array $jsonContent, User $user) {
+	/**
+	 * @param mixed[] $jsonContent
+	 * @param User $user
+	 *
+	 * @noinspection PhpPluralMixedCanBeReplacedWithArrayInspection
+	 */
+	private function __construct(array $jsonContent, User $user)
+	{
 		$this->jsonContent = $jsonContent;
 		$this->user = $user;
 	}
 
-	public static function fromArray($jsonContent)
+	/**
+	 * @param mixed[] $jsonContent
+	 *
+	 * @return static
+	 */
+	public static function fromArray(array $jsonContent): self
 	{
 		$user = self::createUser($jsonContent);
-		$subscribe =  new static($jsonContent, $user);
+		$subscribe = new self($jsonContent, $user);
 
 		$subscribe->user = $user;
 		$subscribe->emailId = self::validateEmptyString($jsonContent['ID_EMAIL']);
@@ -66,7 +79,7 @@ class SubscribeWebHook
 		$subscribe->ipOrig = self::validateIp($jsonContent['IP_ORIG']);
 		$subscribe->mailingListId = self::validateEmptyString($jsonContent['ID_ML']);
 		$subscribe->channel = self::validateEmptyString($jsonContent['CHANNEL']);
-		$subscribe->userAgentString =self::validateEmptyString($jsonContent['UA']);
+		$subscribe->userAgentString = self::validateEmptyString($jsonContent['UA']);
 		$subscribe->userAgentRequest = self::validateEmptyString($jsonContent['UA_REQUEST']);
 		$subscribe->ipRequest = self::validateIp($jsonContent['IP_REQUEST']);
 		$subscribe->ipOrigRequest = self::validateIp($jsonContent['IP_ORIG_REQUEST']);
@@ -186,7 +199,8 @@ class SubscribeWebHook
 	}
 
 	/**
-	 * @param array $jsonContent
+	 * @param mixed[] $jsonContent
+	 *
 	 * @return User
 	 */
 	private static function createUser(array $jsonContent): User
@@ -210,18 +224,20 @@ class SubscribeWebHook
 		$user->setCountry(self::validateEmptyString($jsonContent['COUNTRY']));
 
 		for ($i = 1; $i <= User::CUSTOM_FIELDS_CNT; $i++) {
-			$user->setCustomField($i, $jsonContent['CUSTOM'.$i] ?? null);
+			$user->setCustomField($i, $jsonContent['CUSTOM' . $i] ?? null);
 		}
 
 		return $user;
 	}
 
-	private static function validateEmptyString($string)
+	private static function validateEmptyString(?string $string): ?string
 	{
-		return trim($string ?? '') === '' ? null : trim($string);
+		$string = $string ?? '';
+
+		return trim($string) === '' ? null : trim($string);
 	}
 
-	private static function validateIp($ipAddress)
+	private static function validateIp(?string $ipAddress): ?string
 	{
 		if (filter_var($ipAddress, FILTER_VALIDATE_IP)) {
 			return $ipAddress;
@@ -229,5 +245,4 @@ class SubscribeWebHook
 
 		return null;
 	}
-
 }

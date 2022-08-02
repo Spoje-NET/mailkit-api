@@ -1,12 +1,13 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Igloonet\MailkitApi\DataObjects;
 
+use Igloonet\MailkitApi\Consistence\Enum\Exceptions\InvalidEnumValueException;
 use Igloonet\MailkitApi\DataObjects\Enums\UnsubscribeMethod;
 use Nette\Utils\DateTime;
 
-class UnsubscribeWebHook
+final class UnsubscribeWebHook
 {
 	/** @var User|null */
 	private $user = null;
@@ -53,20 +54,31 @@ class UnsubscribeWebHook
 	/** @var string|null */
 	private $unsubscribeNote = null;
 
-	/** $jsonContent */
+	/** @var mixed[] */
 	private $jsonContent = null;
 
-	private function __construct(array $jsonContent, User $user) {
+	/**
+	 * @param mixed[] $jsonContent
+	 * @param User $user
+	 */
+	private function __construct(array $jsonContent, User $user)
+	{
 		$this->jsonContent = $jsonContent;
 		$this->user = $user;
 	}
 
-	public static function fromArray($jsonContent)
+	/**
+	 * @param mixed[] $jsonContent
+	 *
+	 * @return static
+	 * @throws InvalidEnumValueException
+	 */
+	public static function fromArray(array $jsonContent): self
 	{
 		//validation
 
 		$user = self::createUser($jsonContent);
-		$subscribe =  new static($jsonContent, $user);
+		$subscribe = new self($jsonContent, $user);
 
 		$subscribe->user = $user;
 		$subscribe->emailId = self::validateEmptyString($jsonContent['ID_EMAIL']);
@@ -207,12 +219,14 @@ class UnsubscribeWebHook
 		return $this->unsubscribeNote;
 	}
 
-	private static function validateEmptyString($string)
+	private static function validateEmptyString(?string $string): ?string
 	{
-		return trim($string ?? '') === '' ? null : trim($string);
+		$string = $string ?? '';
+
+		return trim($string) === '' ? null : trim($string);
 	}
 
-	private static function validateIp($ipAddress)
+	private static function validateIp(?string $ipAddress): ?string
 	{
 		if (filter_var($ipAddress, FILTER_VALIDATE_IP)) {
 			return $ipAddress;
@@ -222,13 +236,12 @@ class UnsubscribeWebHook
 	}
 
 	/**
-	 * @param array $jsonContent
+	 * @param mixed[] $jsonContent
+	 *
 	 * @return User
 	 */
 	private static function createUser(array $jsonContent): User
 	{
-		$user = new User($jsonContent['EMAIL']);
-
-		return $user;
+		return new User($jsonContent['EMAIL']);
 	}
 }

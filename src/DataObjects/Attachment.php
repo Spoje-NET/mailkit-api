@@ -7,7 +7,7 @@ use Igloonet\MailkitApi\Exceptions\Message\AttachmentEmptyContentException;
 use Igloonet\MailkitApi\Exceptions\Message\AttachmentFileNotFoundException;
 use Igloonet\MailkitApi\Exceptions\Message\AttachmentFileNotReadableException;
 
-class Attachment
+final class Attachment
 {
 	/** @var string */
 	private $name = null;
@@ -72,7 +72,7 @@ class Attachment
 			$name = pathinfo($filePath, PATHINFO_BASENAME);
 		}
 
-		$attachment = new static($name);
+		$attachment = new self((string)$name);
 		$attachment->filePath = $filePath;
 
 		return $attachment;
@@ -85,7 +85,7 @@ class Attachment
 	 */
 	public static function fromString(string $content, string $name): self
 	{
-		$attachment = new static($name);
+		$attachment = new self($name);
 
 		$attachment->content = $content;
 

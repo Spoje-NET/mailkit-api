@@ -20,6 +20,6 @@ class UserCreationBadEmailSyntaxException extends UserCreationException
 	) {
 		$this->emailAddress = $emailAddress;
 
-		parent::__construct($rpcResponse, $message, $code, $previous);
+		parent::__construct($rpcResponse,(string) $message, $code, $previous);
 	}
 }

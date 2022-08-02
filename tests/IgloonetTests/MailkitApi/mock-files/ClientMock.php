@@ -18,8 +18,8 @@ class ClientMock extends Client
 
 	/**
 	 * @param string $method
-	 * @param array $params
-	 * @param array $possibleErrors
+	 * @param mixed[] $params
+	 * @param mixed[] $possibleErrors
 	 * @return IRpcResponse
 	 */
 	public function sendRpcRequest(string $method, array $params, array $possibleErrors): IRpcResponse

@@ -7,7 +7,7 @@ use Igloonet\MailkitApi\DataObjects\Enums\SendMailResultStatus;
 use Igloonet\MailkitApi\Exceptions\InvalidResponseException;
 use Igloonet\MailkitApi\RPC\Responses\IRpcResponse;
 
-class SendMailResult implements IApiMethodResult
+final class SendMailResult implements IApiMethodResult
 {
 	/** @var int|null */
 	private $emailId = null;
@@ -81,6 +81,6 @@ class SendMailResult implements IApiMethodResult
 		$messageId = is_numeric($value['data3']) && (int)$value['data3'] > 0 ? (int)$value['data3'] : null;
 		$status = is_numeric($value['status']) ? SendMailResultStatus::get($value['status']): null;
 
-		return new static($emailId, $sendingId, $messageId, $status);
+		return new self($emailId, $sendingId, $messageId, $status);
 	}
 }

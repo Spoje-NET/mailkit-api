@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Igloonet\MailkitApi\Managers;
 
@@ -20,6 +20,7 @@ class MessagesManager extends BaseManager implements IMessageManager
 	 * @param Message $message
 	 * @param int|null $mailingListId
 	 * @param int $campaignId
+	 *
 	 * @return SendMailResult
 	 * @throws MessageSendException
 	 */
@@ -38,7 +39,7 @@ class MessagesManager extends BaseManager implements IMessageManager
 
 		$templateVars = $message->getTemplateVars();
 
-		array_walk_recursive($templateVars, function(&$item, $key){
+		array_walk_recursive($templateVars, function (&$item, $key) {
 			$item = $this->encodeString((string) $item);
 		});
 
@@ -49,7 +50,7 @@ class MessagesManager extends BaseManager implements IMessageManager
 		$params = [
 			'mailinglist_id' => $mailingListId ?? $message->getUser()->getMailingListId(),
 			'campaign_id' => $campaignId,
-			$deliveryParams
+			$deliveryParams,
 		];
 
 		foreach ($this->getUserDataSectionsForMessage($message) as $dataSection) {
@@ -59,7 +60,7 @@ class MessagesManager extends BaseManager implements IMessageManager
 		foreach ($message->getAttachments() as $attachment) {
 			$params[] = [
 				'name' => $attachment->getName(),
-				'data' => $this->encodeString($attachment->getContent())
+				'data' => $this->encodeString($attachment->getContent()),
 			];
 		}
 
@@ -70,7 +71,7 @@ class MessagesManager extends BaseManager implements IMessageManager
 			'Invalid ID_message',
 			'Missing send_to',
 			'Missing sender address',
-			'Attachment is not allowed'
+			'Attachment is not allowed',
 		];
 
 		$rpcResponse = $this->sendRpcRequest('mailkit.sendmail', $params, $possibleErrors);
@@ -79,25 +80,18 @@ class MessagesManager extends BaseManager implements IMessageManager
 			switch ($rpcResponse->getError()) {
 				case 'Missing ID_mailing_list':
 					throw new MessageSendMissingMailingListIdException($rpcResponse);
-					break;
 				case 'Invalid ID_mailing_list':
 					throw new MessageSendInvalidMailingListIdException($rpcResponse);
-					break;
 				case 'Missing ID_message':
 					throw new MessageSendMissingCampaignIdException($rpcResponse);
-					break;
 				case 'Invalid ID_message':
 					throw new MessageSendInvalidCampaignIdException($rpcResponse);
-					break;
 				case 'Missing send_to':
 					throw new MessageSendMissingSendToException($rpcResponse);
-					break;
 				case 'Missing sender address':
 					throw new MessageSendMissingSenderAddressException($rpcResponse);
-					break;
 				case 'Attachment is not allowed':
 					throw new MessageSendAttachmentNotAllowedException($rpcResponse);
-					break;
 			}
 		}
 
@@ -106,7 +100,8 @@ class MessagesManager extends BaseManager implements IMessageManager
 
 	/**
 	 * @param Message $message
-	 * @return array
+	 *
+	 * @return mixed[]
 	 */
 	private function getUserDataSectionsForMessage(Message $message): array
 	{

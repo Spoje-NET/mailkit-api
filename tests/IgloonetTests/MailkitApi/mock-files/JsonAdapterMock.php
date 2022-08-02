@@ -13,7 +13,7 @@ class JsonAdapterMock extends JsonAdapter
 
 	/**
 	 * @param string $method
-	 * @param array $params
+	 * @param mixed[] $params
 	 * @return array
 	 */
 	protected function getContent(string $method, array $params): array

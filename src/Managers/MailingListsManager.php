@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Igloonet\MailkitApi\Managers;
 
+use Igloonet\MailkitApi\Consistence\Enum\Exceptions\InvalidEnumValueException;
 use Igloonet\MailkitApi\DataObjects\Enums\MailingListStatus;
 use Igloonet\MailkitApi\DataObjects\MailingList;
 use Igloonet\MailkitApi\Exceptions\MailingList\MailingListCreationUnknownErrorException;
@@ -14,12 +15,14 @@ use Igloonet\MailkitApi\Exceptions\MailingList\MailingListMissingIdException;
 use Igloonet\MailkitApi\Exceptions\MailingList\MailingListMissingNameException;
 use Igloonet\MailkitApi\Exceptions\MailingList\MailingListNotFoundException;
 use Igloonet\MailkitApi\Exceptions\MailingList\MailingListsLoadException;
+use Igloonet\MailkitApi\Helpers\Strict;
 use Nette\Utils\Strings;
 
 class MailingListsManager extends BaseManager
 {
 	/**
 	 * @return array|MailingList[]
+	 * @throws InvalidEnumValueException
 	 */
 	public function getMailingLists(): array
 	{
@@ -69,13 +72,10 @@ class MailingListsManager extends BaseManager
 			switch ($rpcResponse->getError()) {
 				case 'Missing name of mailing list':
 					throw new MailingListMissingNameException($rpcResponse);
-					break;
 				case 'Mailing list exist':
 					throw new MailingListExistsException($rpcResponse);
-					break;
 				default:
 					throw new MailingListCreationUnknownErrorException($rpcResponse);
-					break;
 			}
 		}
 
@@ -120,13 +120,10 @@ class MailingListsManager extends BaseManager
 			switch ($rpcResponse->getError()) {
 				case 'Missing ID_user_list':
 					throw new MailingListMissingIdException($rpcResponse);
-					break;
 				case 'Invalid ID_user_list':
 					throw new MailingListInvalidIdException($rpcResponse);
-					break;
 				default:
 					throw new MailingListDeletionUnknownErrorException($rpcResponse);
-					break;
 			}
 		}
 
@@ -149,7 +146,7 @@ class MailingListsManager extends BaseManager
 	{
 		$mailingList = $this->getMailingListByName($name);
 
-		return $this->deleteMailingList($mailingList->getId(), $keepList);
+		return $this->deleteMailingList(Strict::integer($mailingList->getId()), $keepList);
 	}
 
 	/**

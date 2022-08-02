@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Igloonet\MailkitApi\DataObjects\Enums;
 
-class InsertStatus extends \Consistence\Enum\Enum
+use Igloonet\MailkitApi\Consistence\Enum\Enum;
+
+class InsertStatus extends Enum
 {
 	const UPDATE = 0;
 	const INSERT = 1;

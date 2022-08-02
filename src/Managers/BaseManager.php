@@ -19,9 +19,14 @@ abstract class BaseManager
 	/** @var array|string[] */
 	protected $enabledLanguages = null;
 
-	/** @var string */
+	/** @var string|null */
 	protected $defaultLanguage = null;
 
+	/**
+	 * @param Client $client
+	 * @param mixed[] $enabledLanguages
+	 * @param string $defaultLanguage
+	 */
 	public function __construct(Client $client, array $enabledLanguages, string $defaultLanguage)
 	{
 		$this->client = $client;
@@ -31,8 +36,8 @@ abstract class BaseManager
 
 	/**
 	 * @param string $method
-	 * @param array $params
-	 * @param array $possibleErrors
+	 * @param mixed[] $params
+	 * @param mixed[] $possibleErrors
 	 * @return IRpcResponse
 	 */
 	protected function sendRpcRequest(string $method, array $params, array $possibleErrors): IRpcResponse
@@ -59,12 +64,12 @@ abstract class BaseManager
 	}
 
 	/**
-	 * @param array $arr
-	 * @return array
+	 * @param mixed[] $arr
+	 * @return mixed[]
 	 */
 	protected function filterNullsFromArray(array $arr): array
 	{
-		return array_filter($arr, function ($value) {
+		return array_filter($arr, static function ($value) {
 			return $value !== null;
 		});
 	}
@@ -94,7 +99,7 @@ abstract class BaseManager
 	 * @param User $user
 	 * @param string|null $returnUrl
 	 * @param string|null $templateId
-	 * @return array
+	 * @return mixed[][]
 	 */
 	protected function getUserDataSections(User $user, ?string $returnUrl, ?string $templateId): array
 	{
@@ -137,8 +142,8 @@ abstract class BaseManager
 	}
 
 	/**
-	 * @param array $dataSections
-	 * @return array
+	 * @param mixed[] $dataSections
+	 * @return mixed[]
 	 */
 	protected function fixEmptyUserDataSections(array $dataSections): array
 	{

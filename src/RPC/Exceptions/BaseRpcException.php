@@ -13,6 +13,13 @@ abstract class BaseRpcException extends \RuntimeException implements RpcExceptio
 	/** @var mixed */
 	protected $requestData = null;
 
+	/**
+	 * @param string $method
+	 * @param mixed[] $requestData
+	 * @param string $message
+	 * @param int $code
+	 * @param Throwable|null $previous
+	 */
 	public function __construct(
 		string $method,
 		array $requestData,

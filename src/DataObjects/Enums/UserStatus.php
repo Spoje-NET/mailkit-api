@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Igloonet\MailkitApi\DataObjects\Enums;
 
-class UserStatus extends \Consistence\Enum\Enum
+use Igloonet\MailkitApi\Consistence\Enum\Enum;
+
+class UserStatus extends Enum
 {
 	const ENABLED = 'enabled';
 	const DISABLED = 'disabled';

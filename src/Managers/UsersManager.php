@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Igloonet\MailkitApi\Managers;
 
+use Igloonet\MailkitApi\Consistence\Enum\Exceptions\InvalidEnumValueException;
 use Igloonet\MailkitApi\DataObjects\Enums\Gender;
 use Igloonet\MailkitApi\DataObjects\Enums\InsertStatus;
 use Igloonet\MailkitApi\DataObjects\Enums\UserStatus;
@@ -91,13 +92,10 @@ class UsersManager extends BaseManager
 			switch ($rpcResponse->getError()) {
 				case 'Invalid ID_email':
 					throw new UserStatusNoExistingEmailIdException($rpcResponse);
-					break;
 				case 'Missing ID email':
 					throw new UserStatusMissingEmailIdException($rpcResponse);
-					break;
 				default:
 					throw new UserStatusUnknownErrorException($rpcResponse);
-					break;
 			}
 		}
 
@@ -188,10 +186,8 @@ class UsersManager extends BaseManager
 			switch ($rpcResponse->getError()) {
 				case 'Invalid ID_email or email':
 					throw new UserUnsubscribtionInvalidEmailIdException($rpcResponse);
-					break;
 				default:
 					throw new UserUnsubscribtionUnknownErrorException($rpcResponse);
-					break;
 			}
 		}
 
@@ -260,9 +256,9 @@ class UsersManager extends BaseManager
 		if ($rpcResponse->isError()) {
 			if (Strings::endsWith($rpcResponse->getError(), ' is not unsubscribed')) {
 				throw new UserRevalidationNotUnsubscribedException($rpcResponse);
-			} else {
-				throw new UserRevalidationUnknownErrorException($rpcResponse);
 			}
+
+			throw new UserRevalidationUnknownErrorException($rpcResponse);
 		}
 
 		$result = $rpcResponse->getStringValue();
@@ -275,7 +271,7 @@ class UsersManager extends BaseManager
 	 * @param User $user
 	 * @param string|null $returnUrl
 	 * @param string|null $templateId
-	 * @return array
+	 * @return mixed[]
 	 */
 	private function getUserDataSectionsForAdd(User $user, ?string $returnUrl, ?string $templateId): array
 	{
@@ -284,7 +280,7 @@ class UsersManager extends BaseManager
 
 	/**
 	 * @param User $user
-	 * @return array
+	 * @return mixed[]
 	 */
 	private function getUserDataSectionsForEdit(User $user): array
 	{
@@ -301,8 +297,9 @@ class UsersManager extends BaseManager
 	 * @param bool $doubleOptIn
 	 * @param string|null $returnUrl
 	 * @param string|null $templateId
+	 *
 	 * @return bool
-	 * @throws UserCreationException
+	 * @throws InvalidEnumValueException
 	 */
 	public function addUser(
 		User $user,
@@ -334,22 +331,16 @@ class UsersManager extends BaseManager
 			switch ($rpcResponse->getError()) {
 				case 'Missing email':
 					throw new UserCreationMissingEmailException($rpcResponse);
-					break;
 				case 'Bad email syntax':
-					throw new UserCreationBadEmailSyntaxException($rpcResponse, $user->getEmail());
-					break;
+					throw new UserCreationBadEmailSyntaxException($rpcResponse, (string) $user->getEmail());
 				case 'Missing ID_mailing_list':
 					throw new UserCreationMissingMailingListIdException($rpcResponse);
-					break;
 				case 'Invalid ID_mailing_list':
 					throw new UserCreationInvalidMailingListIdException($rpcResponse);
-					break;
 				case 'Invalid ID_template':
 					throw new UserCreationInvalidTemplateIdException($rpcResponse);
-					break;
 				default:
 					throw new UserCreationUnknownErrorException($rpcResponse);
-					break;
 			}
 		}
 
@@ -357,9 +348,9 @@ class UsersManager extends BaseManager
 			$message = $rpcResponse->getStringValue();
 			if ($message === 'Sent subscribe email') {
 				return true;
-			} else {
-				throw new UserCreationUnknownErrorException($rpcResponse, $message);
 			}
+
+			throw new UserCreationUnknownErrorException($rpcResponse, $message);
 		} catch (InvalidDataTypeException $ex) {
 			$value = $rpcResponse->getArrayValue();
 
@@ -410,19 +401,14 @@ class UsersManager extends BaseManager
 			switch ($rpcResponse->getError()) {
 				case 'Missing ID_email':
 					throw new UserEditMissingEmailIdException($rpcResponse);
-					break;
 				case 'Invalid ID_email':
 					throw new UserEditInvalidEmailIdException($rpcResponse);
-					break;
 				case 'Missing ID_mailing_list':
 					throw new UserEditMissingMailingListIdException($rpcResponse);
-					break;
 				case 'Invalid ID_mailing_list':
 					throw new UserEditInvalidMailingListIdException($rpcResponse);
-					break;
 				default:
 					throw new UserEditUnknownErrorException($rpcResponse);
-					break;
 			}
 		}
 

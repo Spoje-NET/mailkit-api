@@ -10,9 +10,18 @@ class RpcResponseUnknownErrorException extends BaseRpcException
 	/** @var string  */
 	protected $error = '';
 
-	/** @var array */
+	/** @var mixed[] */
 	protected $possibleErrors = [];
 
+	/**
+	 * @param string $method
+	 * @param mixed[] $requestData
+	 * @param string $error
+	 * @param mixed[] $possibleErrors
+	 * @param string $message
+	 * @param int $code
+	 * @param Throwable|null $previous
+	 */
 	public function __construct(
 		string $method,
 		array $requestData,
