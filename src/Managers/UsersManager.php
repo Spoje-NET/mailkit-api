@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Igloonet\MailkitApi\Managers;
 
@@ -10,7 +10,6 @@ use Igloonet\MailkitApi\DataObjects\Enums\UserStatus;
 use Igloonet\MailkitApi\DataObjects\User;
 use Igloonet\MailkitApi\Exceptions\User\TooManyStatusResultsException;
 use Igloonet\MailkitApi\Exceptions\User\UserCreationBadEmailSyntaxException;
-use Igloonet\MailkitApi\Exceptions\User\UserCreationException;
 use Igloonet\MailkitApi\Exceptions\User\UserCreationInvalidMailingListIdException;
 use Igloonet\MailkitApi\Exceptions\User\UserCreationInvalidTemplateIdException;
 use Igloonet\MailkitApi\Exceptions\User\UserCreationMissingEmailException;
@@ -33,12 +32,10 @@ use Igloonet\MailkitApi\Exceptions\User\UserUnsubscribtionException;
 use Igloonet\MailkitApi\Exceptions\User\UserUnsubscribtionInvalidEmailIdException;
 use Igloonet\MailkitApi\Exceptions\User\UserUnsubscribtionUnknownErrorException;
 use Igloonet\MailkitApi\RPC\Exceptions\InvalidDataTypeException;
-use Nette\Utils\Strings;
 
 class UsersManager extends BaseManager
 {
 	/**
-	 * @param string $emailAddress
 	 * @return array|User[]
 	 * @throws UserStatusReceiveException
 	 */
@@ -48,42 +45,18 @@ class UsersManager extends BaseManager
 	}
 
 	/**
-	 * @param int $emailId
-	 * @return User|null
-	 * @throws UserStatusReceiveException|TooManyStatusResultsException
-	 */
-	public function getUserByEmailId(int $emailId): ?User
-	{
-		$userData = $this->getUsers((string)$emailId);
-
-		if (count($userData) > 1) {
-			throw new TooManyStatusResultsException(
-				sprintf(
-					'getUserData() returned %d results for email id %d. %d expected.',
-					count($userData),
-					$emailId,
-					1
-				)
-			);
-		}
-
-		return $userData[0] ?? null;
-	}
-
-	/**
-	 * @param string $emailId
 	 * @return array|User[]
 	 * @throws UserStatusReceiveException
 	 */
 	private function getUsers(string $emailId): array
 	{
 		$params = [
-			'email_id' => $emailId
+			'email_id' => $emailId,
 		];
 		$possibleErrors = [
 			'',
 			'Missing ID email',
-			'Invalid ID_email'
+			'Invalid ID_email',
 		];
 
 		$rpcResponse = $this->sendRpcRequest('mailkit.email.getstatus', $params, $possibleErrors);
@@ -125,7 +98,7 @@ class UsersManager extends BaseManager
 			$user->setMailingListId($userData['ID_MAILING_LIST'] ?? null);
 
 			for ($i = 1; $i <= User::CUSTOM_FIELDS_CNT; $i++) {
-				$user->setCustomField($i, $userData['CUSTOM_'.$i] ?? null);
+				$user->setCustomField($i, $userData['CUSTOM_' . $i] ?? null);
 			}
 
 			$users[] = $user;
@@ -135,10 +108,29 @@ class UsersManager extends BaseManager
 	}
 
 	/**
-	 * @param string $emailAddress
-	 * @param bool $sendOptOut
+	 * @throws UserStatusReceiveException|TooManyStatusResultsException
+	 */
+	public function getUserByEmailId(int $emailId): ?User
+	{
+		$userData = $this->getUsers((string) $emailId);
+
+		if (count($userData) > 1) {
+			throw new TooManyStatusResultsException(
+				sprintf(
+					'getUserData() returned %d results for email id %d. %d expected.',
+					count($userData),
+					$emailId,
+					1
+				)
+			);
+		}
+
+		return $userData[0] ?? null;
+	}
+
+	/**
 	 * @param int|null $campaignMessageId
-	 * @return int
+	 *
 	 * @throws UserUnsubscribtionException
 	 */
 	public function unsubscribeEmailAddress(
@@ -150,22 +142,8 @@ class UsersManager extends BaseManager
 	}
 
 	/**
-	 * @param int $emailId
-	 * @param bool $sendOptOut
 	 * @param int|null $campaignMessageId
-	 * @return int
-	 * @throws UserUnsubscribtionException
-	 */
-	public function unsubscribeEmailId(int $emailId, bool $sendOptOut, int $campaignMessageId = null): int
-	{
-		return $this->unsubscribeUser((string)$emailId, $sendOptOut, $campaignMessageId);
-	}
-
-	/**
-	 * @param string $emailId
-	 * @param bool $sendOptOut
-	 * @param int|null $campaignMessageId
-	 * @return int
+	 *
 	 * @throws UserUnsubscribtionException
 	 */
 	private function unsubscribeUser(string $emailId, bool $sendOptOut, int $campaignMessageId = null): int
@@ -173,11 +151,11 @@ class UsersManager extends BaseManager
 		$params = [
 			'ID_email' => $emailId,
 			'ID_send_message' => $campaignMessageId,
-			'send_optout' => $sendOptOut
+			'send_optout' => $sendOptOut,
 		];
 
 		$possibleErrors = [
-			'Invalid ID_email or email'
+			'Invalid ID_email or email',
 		];
 
 		$rpcResponse = $this->sendRpcRequest('mailkit.email.unsubscribe', $params, $possibleErrors);
@@ -195,12 +173,19 @@ class UsersManager extends BaseManager
 	}
 
 	/**
-	 * @param string $emailAddress
-	 * @param bool $agreement
+	 * @param int|null $campaignMessageId
+	 *
+	 * @throws UserUnsubscribtionException
+	 */
+	public function unsubscribeEmailId(int $emailId, bool $sendOptOut, int $campaignMessageId = null): int
+	{
+		return $this->unsubscribeUser((string) $emailId, $sendOptOut, $campaignMessageId);
+	}
+
+	/**
 	 * @param string|null $channel
 	 * @param string|null $language
 	 * @param int|null $campaignMessageId
-	 * @return bool
 	 */
 	public function revalidateEmailAddress(
 		string $emailAddress,
@@ -212,23 +197,11 @@ class UsersManager extends BaseManager
 		return $this->revalidateUser($emailAddress, $agreement, $channel, $language, $campaignMessageId);
 	}
 
-	public function revalidateEmailId(
-		int $emailId,
-		bool $agreement,
-		string $channel = null,
-		string $language = null,
-		int $campaignMessageId = null
-	): bool {
-		return $this->revalidateUser((string)$emailId, $agreement, $channel, $language, $campaignMessageId);
-	}
-
 	/**
-	 * @param string $emailId
-	 * @param bool $agreement
 	 * @param string|null $channel
 	 * @param string|null $language
 	 * @param int|null $campaignMessageId
-	 * @return bool
+	 *
 	 * @throws UserRevalidationException
 	 */
 	private function revalidateUser(
@@ -244,17 +217,17 @@ class UsersManager extends BaseManager
 			'agreement' => $this->getBooleanString($agreement),
 			'channel' => $channel,
 			'dummy' => null,
-			'language' => $this->validateLanguage($language)
+			'language' => $this->validateLanguage($language),
 		];
 
 		$possibleErrors = [
-			'^.+ is not unsubscribed$'
+			'^.+ is not unsubscribed$',
 		];
 
 		$rpcResponse = $this->sendRpcRequest('mailkit.email.revalidate', $params, $possibleErrors);
 
 		if ($rpcResponse->isError()) {
-			if (Strings::endsWith($rpcResponse->getError(), ' is not unsubscribed')) {
+			if (\str_ends_with($rpcResponse->getError(), ' is not unsubscribed')) {
 				throw new UserRevalidationNotUnsubscribedException($rpcResponse);
 			}
 
@@ -267,38 +240,20 @@ class UsersManager extends BaseManager
 			($agreement === false && $result === 'Sent subscribe email');
 	}
 
-	/**
-	 * @param User $user
-	 * @param string|null $returnUrl
-	 * @param string|null $templateId
-	 * @return mixed[]
-	 */
-	private function getUserDataSectionsForAdd(User $user, ?string $returnUrl, ?string $templateId): array
-	{
-		return $this->fixEmptyUserDataSections($this->getUserDataSections($user, $returnUrl, $templateId));
+	public function revalidateEmailId(
+		int $emailId,
+		bool $agreement,
+		string $channel = null,
+		string $language = null,
+		int $campaignMessageId = null
+	): bool {
+		return $this->revalidateUser((string) $emailId, $agreement, $channel, $language, $campaignMessageId);
 	}
 
 	/**
-	 * @param User $user
-	 * @return mixed[]
-	 */
-	private function getUserDataSectionsForEdit(User $user): array
-	{
-		$dataSections = $this->getUserDataSections($user, null, null);
-
-		unset($dataSections[0]['email']);
-
-		return $this->fixEmptyUserDataSections($dataSections);
-	}
-
-	/**
-	 * @param User $user
-	 * @param int|null $mailingListId
-	 * @param bool $doubleOptIn
 	 * @param string|null $returnUrl
 	 * @param string|null $templateId
 	 *
-	 * @return bool
 	 * @throws InvalidEnumValueException
 	 */
 	public function addUser(
@@ -309,8 +264,8 @@ class UsersManager extends BaseManager
 		string $templateId = null
 	): bool {
 		$params = [
-			'mailinglist_id' => $mailingListId ?? $user->getMailingListId() ,
-			'double_opt_in' => $this->getBooleanString($doubleOptIn)
+			'mailinglist_id' => $mailingListId ?? $user->getMailingListId(),
+			'double_opt_in' => $this->getBooleanString($doubleOptIn),
 		];
 
 		foreach ($this->getUserDataSectionsForAdd($user, $returnUrl, $templateId) as $dataSection) {
@@ -322,7 +277,7 @@ class UsersManager extends BaseManager
 			'Bad email syntax',
 			'Missing ID_mailing_list',
 			'Invalid ID_mailing_list',
-			'Invalid ID_template'
+			'Invalid ID_template',
 		];
 
 		$rpcResponse = $this->sendRpcRequest('mailkit.mailinglist.adduser', $params, $possibleErrors);
@@ -351,11 +306,11 @@ class UsersManager extends BaseManager
 			}
 
 			throw new UserCreationUnknownErrorException($rpcResponse, $message);
-		} catch (InvalidDataTypeException $ex) {
+		} catch (InvalidDataTypeException) {
 			$value = $rpcResponse->getArrayValue();
 
 			if (isset($value['data']) && is_numeric($value['data'])) {
-				$user->setId((int)$value['data']);
+				$user->setId((int) $value['data']);
 			}
 
 			if (isset($value['status']) && is_numeric($value['status'])) {
@@ -367,10 +322,14 @@ class UsersManager extends BaseManager
 	}
 
 	/**
-	 * @param User $user
-	 * @param int|null $mailingListId
-	 * @param bool $keepValues
-	 * @return bool
+	 * @return mixed[]
+	 */
+	private function getUserDataSectionsForAdd(User $user, ?string $returnUrl, ?string $templateId): array
+	{
+		return $this->fixEmptyUserDataSections($this->getUserDataSections($user, $returnUrl, $templateId));
+	}
+
+	/**
 	 * @throws UserEditException
 	 */
 	public function editUser(
@@ -392,7 +351,7 @@ class UsersManager extends BaseManager
 			'Missing ID_email',
 			'Invalid ID_email',
 			'Missing ID_mailing_list',
-			'Invalid ID_mailing_list'
+			'Invalid ID_mailing_list',
 		];
 
 		$rpcResponse = $this->sendRpcRequest('mailkit.mailinglist.edituser', $params, $possibleErrors);
@@ -422,32 +381,31 @@ class UsersManager extends BaseManager
 	}
 
 	/**
-	 * @param string $email
+	 * @return mixed[]
+	 */
+	private function getUserDataSectionsForEdit(User $user): array
+	{
+		$dataSections = $this->getUserDataSections($user, null, null);
+
+		unset($dataSections[0]['email']);
+
+		return $this->fixEmptyUserDataSections($dataSections);
+	}
+
+	/**
 	 * @return int[]
 	 */
 	public function deleteEmailAddress(string $email): array
 	{
 		$response = $this->deleteUser($email);
 
-		$emailIds = array_map(function (string $emailId) {
-			return (int) $emailId;
-		}, explode(',', $response));
+		$emailIds = array_map(fn(string $emailId) => (int) $emailId, explode(',', $response));
 
 		return $emailIds;
 	}
 
 	/**
-	 * @param int $emailId
-	 * @return int
-	 */
-	public function deleteEmailId(int $emailId): int
-	{
-		return (int) $this->deleteUser((string)$emailId);
-	}
-
-	/**
 	 * @param string $emailId email or emailId
-	 * @return string
 	 */
 	private function deleteUser(string $emailId): string
 	{
@@ -467,8 +425,13 @@ class UsersManager extends BaseManager
 
 		try {
 			return (string) $rpcResponse->getIntegerValue();
-		} catch (InvalidDataTypeException $e) {
+		} catch (InvalidDataTypeException) {
 			return $rpcResponse->getStringValue();
 		}
+	}
+
+	public function deleteEmailId(int $emailId): int
+	{
+		return (int) $this->deleteUser((string) $emailId);
 	}
 }

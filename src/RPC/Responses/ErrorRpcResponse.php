@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Igloonet\MailkitApi\RPC\Responses;
 
@@ -7,45 +7,25 @@ use Igloonet\MailkitApi\RPC\Exceptions\InvalidDataTypeException;
 
 abstract class ErrorRpcResponse implements IRpcResponse
 {
-	/** @var int|null */
-	protected $errorCode = null;
-
-	/** @var string|null */
-	protected $error = null;
-
-	public function __construct(string $error, int $errorCode = 0)
+	public function __construct(protected ?string $error, protected ?int $errorCode = 0)
 	{
-		$this->error = $error;
-		$this->errorCode = $errorCode;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getStatus(): string
 	{
 		return self::STATUS_ERROR;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isError(): bool
 	{
 		return true;
 	}
 
-	/**
-	 * @return null|string
-	 */
 	public function getError(): ?string
 	{
 		return $this->error;
 	}
 
-	/**
-	 * @return int|null
-	 */
 	public function getErrorCode(): ?int
 	{
 		return $this->errorCode;
@@ -61,7 +41,6 @@ abstract class ErrorRpcResponse implements IRpcResponse
 	}
 
 	/**
-	 * @return string
 	 * @throws InvalidDataTypeException
 	 */
 	public function getStringValue(): string
@@ -70,7 +49,6 @@ abstract class ErrorRpcResponse implements IRpcResponse
 	}
 
 	/**
-	 * @return int
 	 * @throws InvalidDataTypeException
 	 */
 	public function getIntegerValue(): int
@@ -79,7 +57,6 @@ abstract class ErrorRpcResponse implements IRpcResponse
 	}
 
 	/**
-	 * @return bool
 	 * @throws InvalidDataTypeException
 	 */
 	public function getBooleanValue(): bool
@@ -97,7 +74,6 @@ abstract class ErrorRpcResponse implements IRpcResponse
 	}
 
 	/**
-	 * @return string
 	 * @throws InvalidDataTypeException
 	 */
 	public function getStringData(): string
@@ -106,7 +82,6 @@ abstract class ErrorRpcResponse implements IRpcResponse
 	}
 
 	/**
-	 * @return int
 	 * @throws InvalidDataTypeException
 	 */
 	public function getIntegerData(): int
@@ -115,7 +90,6 @@ abstract class ErrorRpcResponse implements IRpcResponse
 	}
 
 	/**
-	 * @return bool
 	 * @throws InvalidDataTypeException
 	 */
 	public function getBooleanData(): bool

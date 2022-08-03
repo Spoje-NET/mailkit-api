@@ -8,17 +8,12 @@ use Throwable;
 
 abstract class RpcResponseErrorException extends \RuntimeException implements MailkitApiException
 {
-	/** @var IRpcResponse */
-	private $rpcResponse = null;
-
 	public function __construct(
-		IRpcResponse $rpcResponse,
+		private readonly IRpcResponse $rpcResponse,
 		string $message = '',
 		int $code = 0,
 		Throwable $previous = null
 	) {
-		$this->rpcResponse = $rpcResponse;
-
 		if (trim($message) === '') {
 			$message = $rpcResponse->getError() ?? '';
 			$code = $rpcResponse->getErrorCode() ?? 0;

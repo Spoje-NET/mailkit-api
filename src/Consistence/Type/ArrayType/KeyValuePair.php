@@ -10,9 +10,7 @@ use Igloonet\MailkitApi\Consistence\Type\Type;
 
 class KeyValuePair extends ObjectPrototype
 {
-
-	/** @var int|string */
-	private $key;
+	private int|string $key;
 
 	/** @var mixed */
 	private $value;
@@ -56,5 +54,4 @@ class KeyValuePair extends ObjectPrototype
 	{
 		return $this->value;
 	}
-
 }

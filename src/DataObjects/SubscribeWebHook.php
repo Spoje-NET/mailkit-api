@@ -9,47 +9,29 @@ use Nette\Utils\DateTime;
 
 final class SubscribeWebHook
 {
-	/** @var User|null */
-	private $user = null;
+	private ?string $emailId = null;
 
-	/** @var string|null */
-	private $emailId = null;
+	private ?\Nette\Utils\DateTime $date = null;
 
-	/** @var DateTime|null */
-	private $date = null;
+	private ?string $ip = null;
 
-	/** @var string|null */
-	private $ip = null;
+	private ?string $ipOrig = null;
 
-	/** @var string|null */
-	private $ipOrig = null;
+	private ?string $mailingListId = null;
 
-	/** @var string|null */
-	private $mailingListId = null;
+	private ?string $channel = null;
 
-	/** @var string|null */
-	private $channel = null;
+	private ?string $userAgentString = null;
 
-	/** @var string|null */
-	private $userAgentString = null;
+	private ?\Nette\Utils\DateTime $dateRequest = null;
 
-	/** @var DateTime|null */
-	private $dateRequest = null;
+	private ?string $userAgentRequest = null;
 
-	/** @var string|null */
-	private $userAgentRequest = null;
+	private ?string $ipRequest = null;
 
-	/** @var string|null */
-	private $ipRequest = null;
+	private ?string $ipOrigRequest = null;
 
-	/** @var string|null */
-	private $ipOrigRequest = null;
-
-	/** @var string|null */
-	private $urlCode = null;
-
-	/**  @var mixed[] $jsonContent */
-	private $jsonContent = null;
+	private ?string $urlCode = null;
 
 	/**
 	 * @param mixed[] $jsonContent
@@ -57,16 +39,12 @@ final class SubscribeWebHook
 	 *
 	 * @noinspection PhpPluralMixedCanBeReplacedWithArrayInspection
 	 */
-	private function __construct(array $jsonContent, User $user)
+	private function __construct(private readonly array $jsonContent, private ?\Igloonet\MailkitApi\DataObjects\User $user)
 	{
-		$this->jsonContent = $jsonContent;
-		$this->user = $user;
 	}
 
 	/**
 	 * @param mixed[] $jsonContent
-	 *
-	 * @return static
 	 */
 	public static function fromArray(array $jsonContent): self
 	{
@@ -88,120 +66,14 @@ final class SubscribeWebHook
 		try {
 			$subscribe->date = new DateTime($jsonContent['DATE']);
 			$subscribe->dateRequest = new DateTime($jsonContent['DATE_REQUEST']);
-		} catch (\Exception $e) {
+		} catch (\Exception) {
 		}
 
 		return $subscribe;
 	}
 
 	/**
-	 * @return User|null
-	 */
-	public function getUser(): ?User
-	{
-		return $this->user;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getEmailId(): ?string
-	{
-		return $this->emailId;
-	}
-
-	/**
-	 * @return DateTime|null
-	 */
-	public function getDate(): ?DateTime
-	{
-		return $this->date;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getIp(): ?string
-	{
-		return $this->ip;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getIpOrig(): ?string
-	{
-		return $this->ipOrig;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getMailingListId(): ?string
-	{
-		return $this->mailingListId;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getChannel(): ?string
-	{
-		return $this->channel;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getUserAgentString(): ?string
-	{
-		return $this->userAgentString;
-	}
-
-	/**
-	 * @return DateTime|null
-	 */
-	public function getDateRequest(): ?DateTime
-	{
-		return $this->dateRequest;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getUserAgentRequest(): ?string
-	{
-		return $this->userAgentRequest;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getIpRequest(): ?string
-	{
-		return $this->ipRequest;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getIpOrigRequest(): ?string
-	{
-		return $this->ipOrigRequest;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getUrlCode(): ?string
-	{
-		return $this->urlCode;
-	}
-
-	/**
 	 * @param mixed[] $jsonContent
-	 *
-	 * @return User
 	 */
 	private static function createUser(array $jsonContent): User
 	{
@@ -232,7 +104,7 @@ final class SubscribeWebHook
 
 	private static function validateEmptyString(?string $string): ?string
 	{
-		$string = $string ?? '';
+		$string ??= '';
 
 		return trim($string) === '' ? null : trim($string);
 	}
@@ -244,5 +116,70 @@ final class SubscribeWebHook
 		}
 
 		return null;
+	}
+
+	public function getUser(): ?User
+	{
+		return $this->user;
+	}
+
+	public function getEmailId(): ?string
+	{
+		return $this->emailId;
+	}
+
+	public function getDate(): ?DateTime
+	{
+		return $this->date;
+	}
+
+	public function getIp(): ?string
+	{
+		return $this->ip;
+	}
+
+	public function getIpOrig(): ?string
+	{
+		return $this->ipOrig;
+	}
+
+	public function getMailingListId(): ?string
+	{
+		return $this->mailingListId;
+	}
+
+	public function getChannel(): ?string
+	{
+		return $this->channel;
+	}
+
+	public function getUserAgentString(): ?string
+	{
+		return $this->userAgentString;
+	}
+
+	public function getDateRequest(): ?DateTime
+	{
+		return $this->dateRequest;
+	}
+
+	public function getUserAgentRequest(): ?string
+	{
+		return $this->userAgentRequest;
+	}
+
+	public function getIpRequest(): ?string
+	{
+		return $this->ipRequest;
+	}
+
+	public function getIpOrigRequest(): ?string
+	{
+		return $this->ipOrigRequest;
+	}
+
+	public function getUrlCode(): ?string
+	{
+		return $this->urlCode;
 	}
 }

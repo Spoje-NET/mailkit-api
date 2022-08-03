@@ -1,4 +1,5 @@
 <?php
+
 namespace IgloonetTests\MailkitApi;
 
 use Igloonet\MailkitApi\RPC\Client;
@@ -7,6 +8,7 @@ use Igloonet\MailkitApi\RPC\Responses\IRpcResponse;
 class ClientMock extends Client
 {
 	private $xmlAdapter = null;
+
 	private $jsonAdapter = null;
 
 	public function __construct()
@@ -17,10 +19,8 @@ class ClientMock extends Client
 	}
 
 	/**
-	 * @param string $method
 	 * @param mixed[] $params
 	 * @param mixed[] $possibleErrors
-	 * @return IRpcResponse
 	 */
 	public function sendRpcRequest(string $method, array $params, array $possibleErrors): IRpcResponse
 	{

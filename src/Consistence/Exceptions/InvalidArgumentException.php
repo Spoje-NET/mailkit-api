@@ -6,5 +6,4 @@ namespace Igloonet\MailkitApi\Consistence\Exceptions;
 
 class InvalidArgumentException extends PhpException
 {
-
 }

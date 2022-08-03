@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Igloonet\MailkitApi\Exceptions\User;
 
@@ -8,18 +8,13 @@ use Throwable;
 
 class UserCreationBadEmailSyntaxException extends UserCreationException
 {
-	/** @var null|string  */
-	private $emailAddress = null;
-
 	public function __construct(
 		IRpcResponse $rpcResponse,
-		string $emailAddress,
+		private readonly ?string $emailAddress,
 		?string $message = '',
 		int $code = 0,
 		Throwable $previous = null
 	) {
-		$this->emailAddress = $emailAddress;
-
-		parent::__construct($rpcResponse,(string) $message, $code, $previous);
+		parent::__construct($rpcResponse, (string) $message, $code, $previous);
 	}
 }

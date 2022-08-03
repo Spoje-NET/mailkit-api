@@ -12,5 +12,4 @@ interface IMessageManager
 		?int $mailingListId,
 		int $campaignId
 	): SendMailResult;
-
 }

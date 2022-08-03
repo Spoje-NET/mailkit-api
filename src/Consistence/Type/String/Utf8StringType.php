@@ -21,5 +21,4 @@ class Utf8StringType extends ObjectPrototype
 	{
 		return strlen(utf8_decode($string));
 	}
-
 }

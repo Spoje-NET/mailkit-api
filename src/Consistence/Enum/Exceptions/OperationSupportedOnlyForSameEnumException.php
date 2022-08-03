@@ -10,20 +10,20 @@ use Throwable;
 
 class OperationSupportedOnlyForSameEnumException extends PhpException
 {
+	private readonly \Igloonet\MailkitApi\Consistence\Enum\Enum $given;
 
-	/** @var Enum */
-	private $given;
-
-	/** @var Enum */
-	private $expected;
+	private readonly \Igloonet\MailkitApi\Consistence\Enum\Enum $expected;
 
 	public function __construct(Enum $given, Enum $expected, Throwable $previous = null)
 	{
-		parent::__construct(sprintf(
-			'Operation supported only for enum of same class: %s given, %s expected',
-			get_class($given),
-			get_class($expected)
-		), $previous);
+		parent::__construct(
+			sprintf(
+				'Operation supported only for enum of same class: %s given, %s expected',
+				$given::class,
+				$expected::class
+			),
+			$previous
+		);
 		$this->given = $given;
 		$this->expected = $expected;
 	}
@@ -37,5 +37,4 @@ class OperationSupportedOnlyForSameEnumException extends PhpException
 	{
 		return $this->expected;
 	}
-
 }

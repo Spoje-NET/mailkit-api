@@ -8,7 +8,5 @@ use Igloonet\MailkitApi\Consistence\Type\ObjectMixinTrait;
 
 abstract class ObjectPrototype
 {
-
 	use ObjectMixinTrait;
-
 }

@@ -9,12 +9,10 @@ use Igloonet\MailkitApi\Consistence\Type\Type;
 
 class DuplicateValueSpecifiedException extends PhpException
 {
-
 	/** @var mixed */
 	private $value;
 
-	/** @var string */
-	private $class;
+	private readonly string $class;
 
 	/**
 	 * @param mixed $value
@@ -23,12 +21,15 @@ class DuplicateValueSpecifiedException extends PhpException
 	 */
 	public function __construct($value, string $class, \Throwable $previous = null)
 	{
-		parent::__construct(sprintf(
-			'Value %s [%s] is specified in %s\'s available values multiple times',
-			$value,
-			Type::getType($value),
-			$class
-		), $previous);
+		parent::__construct(
+			sprintf(
+				'Value %s [%s] is specified in %s\'s available values multiple times',
+				$value,
+				Type::getType($value),
+				$class
+			),
+			$previous
+		);
 		$this->value = $value;
 		$this->class = $class;
 	}
@@ -45,5 +46,4 @@ class DuplicateValueSpecifiedException extends PhpException
 	{
 		return $this->class;
 	}
-
 }

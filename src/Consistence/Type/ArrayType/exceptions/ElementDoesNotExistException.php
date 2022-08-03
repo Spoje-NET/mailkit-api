@@ -8,5 +8,4 @@ use Igloonet\MailkitApi\Consistence\Exceptions\PhpException;
 
 class ElementDoesNotExistException extends PhpException
 {
-
 }

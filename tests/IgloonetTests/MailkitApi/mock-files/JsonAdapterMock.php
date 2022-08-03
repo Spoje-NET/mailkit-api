@@ -12,13 +12,12 @@ class JsonAdapterMock extends JsonAdapter
 	}
 
 	/**
-	 * @param string $method
 	 * @param mixed[] $params
-	 * @return array
 	 */
 	protected function getContent(string $method, array $params): array
 	{
-		$content[] = file_get_contents(__DIR__ . '/api-data/json/' .$method.'.json', false);
+		$content = [];
+		$content[] = file_get_contents(__DIR__ . '/api-data/json/' . $method . '.json', false);
 
 		return $content;
 	}

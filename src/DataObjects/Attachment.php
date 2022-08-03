@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Igloonet\MailkitApi\DataObjects;
 
@@ -9,31 +9,43 @@ use Igloonet\MailkitApi\Exceptions\Message\AttachmentFileNotReadableException;
 
 final class Attachment
 {
-	/** @var string */
-	private $name = null;
+	private ?string $filePath = null;
 
-	/** @var string */
-	private $filePath = null;
+	private ?string $content = null;
 
-	/** @var string */
-	private $content = null;
-
-	public function __construct(string $name)
+	public function __construct(private readonly string $name)
 	{
-		$this->name = $name;
 	}
 
 	/**
-	 * @return string|null
+	 * @param string|null $name
 	 */
+	public static function fromFile(string $filePath, string $name = null): self
+	{
+		if (trim($name ?? '') === '') {
+			$name = pathinfo($filePath, PATHINFO_BASENAME);
+		}
+
+		$attachment = new self((string) $name);
+		$attachment->filePath = $filePath;
+
+		return $attachment;
+	}
+
+	public static function fromString(string $content, string $name): self
+	{
+		$attachment = new self($name);
+
+		$attachment->content = $content;
+
+		return $attachment;
+	}
+
 	public function getName(): ?string
 	{
 		return $this->name;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getContent(): string
 	{
 		if ($this->content !== null) {
@@ -59,36 +71,5 @@ final class Attachment
 		throw new AttachmentEmptyContentException(
 			sprintf('Content of attachment %s can not be empty!', $this->name)
 		);
-	}
-
-	/**
-	 * @param string $filePath
-	 * @param string|null $name
-	 * @return Attachment
-	 */
-	public static function fromFile(string $filePath, string $name = null): self
-	{
-		if (trim($name ?? '') === '') {
-			$name = pathinfo($filePath, PATHINFO_BASENAME);
-		}
-
-		$attachment = new self((string)$name);
-		$attachment->filePath = $filePath;
-
-		return $attachment;
-	}
-
-	/**
-	 * @param string $content
-	 * @param string $name
-	 * @return Attachment
-	 */
-	public static function fromString(string $content, string $name): self
-	{
-		$attachment = new self($name);
-
-		$attachment->content = $content;
-
-		return $attachment;
 	}
 }

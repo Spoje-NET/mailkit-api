@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Igloonet\MailkitApi\Exceptions\Message;
 
@@ -7,8 +7,7 @@ use Throwable;
 
 class DuplicateAttachmentNameException extends \LogicException
 {
-	/** @var string|null  */
-	private $name = null;
+	private ?string $name = null;
 
 	public function __construct(?string $name, string $message = '', int $code = 0, Throwable $previous = null)
 	{

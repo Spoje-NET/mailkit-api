@@ -6,12 +6,9 @@ namespace Igloonet\MailkitApi\Consistence\Exceptions;
 
 class UndefinedPropertyException extends PhpException
 {
+	private readonly string $className;
 
-	/** @var string */
-	private $className;
-
-	/** @var string */
-	private $propertyName;
+	private readonly string $propertyName;
 
 	public function __construct(string $className, string $propertyName, \Throwable $previous = null)
 	{
@@ -29,5 +26,4 @@ class UndefinedPropertyException extends PhpException
 	{
 		return $this->propertyName;
 	}
-
 }

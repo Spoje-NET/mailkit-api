@@ -11,6 +11,22 @@ use Igloonet\MailkitApi\Consistence\Exceptions\UndefinedPropertyException;
 trait ObjectMixinTrait
 {
 	/**
+	 * Call to undefined static method
+	 *
+	 * @param string $name method name
+	 * @param mixed[] $args method args
+	 *
+	 * @throws UndefinedMethodException
+	 */
+	public static function __callStatic(string $name, array $args): void
+	{
+		ObjectMixin::magicCallStatic(static::class, $name);
+		// @codeCoverageIgnoreStart
+		// return from this method is never invoked (always throws exception)
+	}
+	// @codeCoverageIgnoreEnd
+
+	/**
 	 * Call to undefined method
 	 *
 	 * @param string $name method name
@@ -22,22 +38,6 @@ trait ObjectMixinTrait
 	public function __call(string $name, array $args): void
 	{
 		ObjectMixin::magicCall($this, $name);
-		// @codeCoverageIgnoreStart
-		// return from this method is never invoked (always throws exception)
-	}
-	// @codeCoverageIgnoreEnd
-
-	/**
-	 * Call to undefined static method
-	 *
-	 * @param string $name method name
-	 * @param mixed[] $args method args
-	 *
-	 * @throws UndefinedMethodException
-	 */
-	public static function __callStatic(string $name, array $args): void
-	{
-		ObjectMixin::magicCallStatic(get_called_class(), $name);
 		// @codeCoverageIgnoreStart
 		// return from this method is never invoked (always throws exception)
 	}

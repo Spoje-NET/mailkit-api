@@ -17,15 +17,14 @@ use ReflectionClass;
 
 abstract class Enum extends ObjectPrototype
 {
-
-	/** @var mixed */
-	private $value;
-
 	/** @var self[] indexed by enum and value */
-	private static $instances = [];
+	private static array $instances = [];
 
 	/** @var mixed[] format: enum name (string) => cached values (const name (string) => value (mixed)) */
 	private static $availableValues;
+
+	/** @var mixed */
+	private $value;
 
 	/**
 	 * @param mixed $value
@@ -41,27 +40,21 @@ abstract class Enum extends ObjectPrototype
 	/**
 	 * @param mixed $value
 	 *
-	 * @return static
 	 * @throws InvalidEnumValueException
 	 */
-	public static function get($value): self
+	public static function checkValue($value): void
 	{
-		$index = sprintf('%s::%s', get_called_class(), self::getValueIndex($value));
-		if (!isset(self::$instances[$index])) {
-			self::$instances[$index] = new static($value);
+		if (!static::isValidValue($value)) {
+			throw new InvalidEnumValueException($value, static::getAvailableValues());
 		}
-
-		return self::$instances[$index];
 	}
 
 	/**
 	 * @param mixed $value
-	 * @return string
 	 */
-	private static function getValueIndex($value): string
+	public static function isValidValue($value): bool
 	{
-		$type = Type::getType($value);
-		return $value . sprintf('[%s]', $type);
+		return ArrayType::containsValue(static::getAvailableValues(), $value);
 	}
 
 	/**
@@ -70,7 +63,7 @@ abstract class Enum extends ObjectPrototype
 	 */
 	public static function getAvailableValues()
 	{
-		$index = get_called_class();
+		$index = static::class;
 		if (!isset(self::$availableValues[$index])) {
 			$availableValues = self::getEnumConstants();
 			static::checkAvailableValues($availableValues);
@@ -81,29 +74,23 @@ abstract class Enum extends ObjectPrototype
 	}
 
 	/**
-	 * @return static[] format: const name (string) => instance (static)
-	 * @throws DuplicateValueSpecifiedException
-	 * @throws InvalidEnumValueException
-	 * @throws InvalidArgumentTypeException
-	 */
-	public static function getAvailableEnums(): array
-	{
-		$values = static::getAvailableValues();
-		return ArrayType::mapByCallback($values, function (KeyValuePair $pair) {
-			return new KeyValuePair($pair->getKey(), static::get($pair->getValue()));
-		});
-	}
-
-	/**
 	 * @return mixed[] format: const name (string) => value (mixed)
 	 */
 	private static function getEnumConstants(): array
 	{
-		$classReflection = new ReflectionClass(get_called_class());
+		$classReflection = new ReflectionClass(static::class);
 		$declaredConstants = ClassReflection::getDeclaredConstants($classReflection);
 		ArrayType::removeKeys($declaredConstants, static::getIgnoredConstantNames());
 
 		return $declaredConstants;
+	}
+
+	/**
+	 * @return string[] names of constants which should not be used as valid values of this enum
+	 */
+	protected static function getIgnoredConstantNames(): array
+	{
+		return [];
 	}
 
 	/**
@@ -127,41 +114,41 @@ abstract class Enum extends ObjectPrototype
 
 	/**
 	 * @param mixed $value
-	 * @return bool
 	 */
-	public static function isValidValue($value): bool
+	private static function getValueIndex($value): string
 	{
-		return ArrayType::containsValue(static::getAvailableValues(), $value);
+		$type = Type::getType($value);
+
+		return $value . sprintf('[%s]', $type);
+	}
+
+	/**
+	 * @return static[] format: const name (string) => instance (static)
+	 * @throws DuplicateValueSpecifiedException
+	 * @throws InvalidEnumValueException
+	 * @throws InvalidArgumentTypeException
+	 */
+	public static function getAvailableEnums(): array
+	{
+		$values = static::getAvailableValues();
+
+		return ArrayType::mapByCallback($values, fn(KeyValuePair $pair) => new KeyValuePair($pair->getKey(), static::get($pair->getValue())));
 	}
 
 	/**
 	 * @param mixed $value
 	 *
+	 * @return static
 	 * @throws InvalidEnumValueException
 	 */
-	public static function checkValue($value): void
+	public static function get($value): self
 	{
-		if (!static::isValidValue($value)) {
-			throw new InvalidEnumValueException($value, static::getAvailableValues());
+		$index = sprintf('%s::%s', static::class, self::getValueIndex($value));
+		if (!isset(self::$instances[$index])) {
+			self::$instances[$index] = new static($value);
 		}
-	}
 
-	/**
-	 * @return string[] names of constants which should not be used as valid values of this enum
-	 */
-	protected static function getIgnoredConstantNames(): array
-	{
-		return [];
-	}
-
-	/**
-	 * @throws OperationSupportedOnlyForSameEnumException
-	 */
-	protected function checkSameEnum(self $that): void
-	{
-		if (get_class($this) !== get_class($that)) {
-			throw new OperationSupportedOnlyForSameEnumException($that, $this);
-		}
+		return self::$instances[$index];
 	}
 
 	/**
@@ -183,12 +170,20 @@ abstract class Enum extends ObjectPrototype
 	}
 
 	/**
+	 * @throws OperationSupportedOnlyForSameEnumException
+	 */
+	protected function checkSameEnum(self $that): void
+	{
+		if ($this::class !== $that::class) {
+			throw new OperationSupportedOnlyForSameEnumException($that, $this);
+		}
+	}
+
+	/**
 	 * @param mixed $value
-	 * @return bool
 	 */
 	public function equalsValue($value): bool
 	{
 		return $this->getValue() === $value;
 	}
-
 }

@@ -8,20 +8,20 @@ use Igloonet\MailkitApi\Consistence\Exceptions\PhpException;
 
 class MultiEnumValueIsNotPowerOfTwoException extends PhpException
 {
+	private readonly int $value;
 
-	/** @var int */
-	private $value;
-
-	/** @var string */
-	private $class;
+	private readonly string $class;
 
 	public function __construct(int $value, string $class, \Throwable $previous = null)
 	{
-		parent::__construct(sprintf(
-			'Value %d in %s is not a power of two, which is needed for MultiEnum to work as expected',
-			$value,
-			$class
-		), $previous);
+		parent::__construct(
+			sprintf(
+				'Value %d in %s is not a power of two, which is needed for MultiEnum to work as expected',
+				$value,
+				$class
+			),
+			$previous
+		);
 		$this->value = $value;
 		$this->class = $class;
 	}
@@ -35,5 +35,4 @@ class MultiEnumValueIsNotPowerOfTwoException extends PhpException
 	{
 		return $this->class;
 	}
-
 }

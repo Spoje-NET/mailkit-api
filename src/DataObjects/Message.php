@@ -7,37 +7,26 @@ use Igloonet\MailkitApi\Exceptions\Message\DuplicateAttachmentNameException;
 
 class Message
 {
-	/** @var User */
-	private $user = null;
+	private ?string $subject = null;
 
-	/** @var string|null */
-	private $subject = null;
-
-	/** @var string|null */
-	private $body = null;
+	private ?string $body = null;
 
 	/** @var mixed[] */
-	private $templateVars = [];
+	private array $templateVars = [];
 
 	/** @var array|Attachment[] */
-	private $attachments = [];
+	private array $attachments = [];
 
-	public function __construct(User $sendToUser)
+	public function __construct(private User $user)
 	{
-		$this->user = $sendToUser;
 	}
 
-	/**
-	 * @return User
-	 */
 	public function getUser(): User
 	{
 		return $this->user;
 	}
 
 	/**
-	 * @param User $user
-	 *
 	 * @return $this
 	 */
 	public function setUser(User $user): self
@@ -47,9 +36,12 @@ class Message
 		return $this;
 	}
 
+	public function getSubject(): ?string
+	{
+		return $this->subject;
+	}
+
 	/**
-	 * @param string|null $subject
-	 *
 	 * @return $this
 	 */
 	public function setSubject(?string $subject): self
@@ -59,17 +51,12 @@ class Message
 		return $this;
 	}
 
-	/**
-	 * @return string|null
-	 */
-	public function getSubject(): ?string
+	public function getBody(): ?string
 	{
-		return $this->subject;
+		return $this->body;
 	}
 
 	/**
-	 * @param string|null $body
-	 *
 	 * @return $this
 	 */
 	public function setBody(?string $body): self
@@ -80,27 +67,6 @@ class Message
 	}
 
 	/**
-	 * @return string|null
-	 */
-	public function getBody(): ?string
-	{
-		return $this->body;
-	}
-
-	/**
-	 * @param mixed[] $templateVars
-	 *
-	 * @return $this
-	 */
-	public function setTemplateVars(array $templateVars): self
-	{
-		$this->templateVars = $templateVars;
-
-		return $this;
-	}
-
-	/**
-	 * @param string $varName
 	 * @param mixed $value
 	 *
 	 * @return $this
@@ -121,8 +87,18 @@ class Message
 	}
 
 	/**
-	 * @param Attachment $attachment
+	 * @param mixed[] $templateVars
 	 *
+	 * @return $this
+	 */
+	public function setTemplateVars(array $templateVars): self
+	{
+		$this->templateVars = $templateVars;
+
+		return $this;
+	}
+
+	/**
 	 * @return $this
 	 */
 	public function addAttachment(Attachment $attachment): self

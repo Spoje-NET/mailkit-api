@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Igloonet\MailkitApi\Managers;
 
@@ -11,13 +11,7 @@ use Nette\Utils\Strings;
 
 abstract class BaseManager
 {
-	public const LANGUAGE_DEFAULT = 'default';
-
-	/** @var Client */
-	protected $client = null;
-
-	/** @var array|string[] */
-	protected $enabledLanguages = null;
+	final public const LANGUAGE_DEFAULT = 'default';
 
 	/** @var string|null */
 	protected $defaultLanguage = null;
@@ -27,57 +21,11 @@ abstract class BaseManager
 	 * @param mixed[] $enabledLanguages
 	 * @param string $defaultLanguage
 	 */
-	public function __construct(Client $client, array $enabledLanguages, string $defaultLanguage)
+	public function __construct(protected Client $client, protected array $enabledLanguages, string $defaultLanguage)
 	{
-		$this->client = $client;
-		$this->enabledLanguages = $enabledLanguages;
 		$this->defaultLanguage = $this->validateLanguage($defaultLanguage);
 	}
 
-	/**
-	 * @param string $method
-	 * @param mixed[] $params
-	 * @param mixed[] $possibleErrors
-	 * @return IRpcResponse
-	 */
-	protected function sendRpcRequest(string $method, array $params, array $possibleErrors): IRpcResponse
-	{
-		return $this->client->sendRpcRequest($method, $params, $possibleErrors);
-	}
-
-	/**
-	 * @param bool $value
-	 * @return string
-	 */
-	protected function getBooleanString(bool $value): string
-	{
-		return $value === true ? "TRUE" : "FALSE";
-	}
-
-	/**
-	 * @param string $str|null
-	 * @return string
-	 */
-	protected function encodeString(?string $str = null): ?string
-	{
-		return $str === null ? null : base64_encode($str);
-	}
-
-	/**
-	 * @param mixed[] $arr
-	 * @return mixed[]
-	 */
-	protected function filterNullsFromArray(array $arr): array
-	{
-		return array_filter($arr, static function ($value) {
-			return $value !== null;
-		});
-	}
-
-	/**
-	 * @param null|string $language
-	 * @return null|string
-	 */
 	protected function validateLanguage(?string $language): ?string
 	{
 		if ($language === null) {
@@ -96,9 +44,20 @@ abstract class BaseManager
 	}
 
 	/**
-	 * @param User $user
-	 * @param string|null $returnUrl
-	 * @param string|null $templateId
+	 * @param mixed[] $params
+	 * @param mixed[] $possibleErrors
+	 */
+	protected function sendRpcRequest(string $method, array $params, array $possibleErrors): IRpcResponse
+	{
+		return $this->client->sendRpcRequest($method, $params, $possibleErrors);
+	}
+
+	protected function getBooleanString(bool $value): string
+	{
+		return $value === true ? "TRUE" : "FALSE";
+	}
+
+	/**
 	 * @return mixed[][]
 	 */
 	protected function getUserDataSections(User $user, ?string $returnUrl, ?string $templateId): array
@@ -126,12 +85,12 @@ abstract class BaseManager
 			'mobile' => $this->encodeString($user->getMobile()),
 			'phone' => $this->encodeString($user->getPhone()),
 			'fax' => $this->encodeString($user->getFax()),
-			'gender' => $user->getGender()
+			'gender' => $user->getGender(),
 		];
 
 		$data3 = [];
 		foreach ($user->getCustomFields() as $fieldNumber => $value) {
-			$data3['custom'.$fieldNumber] = $this->encodeString($value);
+			$data3['custom' . $fieldNumber] = $this->encodeString($value);
 		}
 
 		$data1 = $this->filterNullsFromArray($data1);
@@ -142,13 +101,34 @@ abstract class BaseManager
 	}
 
 	/**
+	 * @param string $str |null
+	 *
+	 * @return string
+	 */
+	protected function encodeString(?string $str = null): ?string
+	{
+		return $str === null ? null : base64_encode($str);
+	}
+
+	/**
+	 * @param mixed[] $arr
+	 *
+	 * @return mixed[]
+	 */
+	protected function filterNullsFromArray(array $arr): array
+	{
+		return array_filter($arr, static fn($value) => $value !== null);
+	}
+
+	/**
 	 * @param mixed[] $dataSections
+	 *
 	 * @return mixed[]
 	 */
 	protected function fixEmptyUserDataSections(array $dataSections): array
 	{
 		foreach ($dataSections as &$dataSection) {
-			if (count($dataSection) === 0) {
+			if ((is_countable($dataSection) ? count($dataSection) : 0) === 0) {
 				$dataSection[''] = null; // forces xmlrpc_encode_request to generate struct instead of array
 			}
 		}

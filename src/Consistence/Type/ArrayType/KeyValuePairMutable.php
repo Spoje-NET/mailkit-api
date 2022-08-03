@@ -18,5 +18,4 @@ class KeyValuePairMutable extends KeyValuePair
 	{
 		parent::setPair($key, $value);
 	}
-
 }

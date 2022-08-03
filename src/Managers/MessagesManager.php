@@ -17,11 +17,7 @@ use Igloonet\MailkitApi\Results\SendMailResult;
 class MessagesManager extends BaseManager implements IMessageManager
 {
 	/**
-	 * @param Message $message
-	 * @param int|null $mailingListId
-	 * @param int $campaignId
 	 *
-	 * @return SendMailResult
 	 * @throws MessageSendException
 	 */
 	public function sendMail(
@@ -99,8 +95,6 @@ class MessagesManager extends BaseManager implements IMessageManager
 	}
 
 	/**
-	 * @param Message $message
-	 *
 	 * @return mixed[]
 	 */
 	private function getUserDataSectionsForMessage(Message $message): array

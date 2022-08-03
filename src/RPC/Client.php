@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Igloonet\MailkitApi\RPC;
 
@@ -9,12 +9,9 @@ use Igloonet\MailkitApi\RPC\Responses\IRpcResponse;
 
 class Client
 {
-	/** @var XmlAdapter  */
-	private $xmlAdapter = null;
+	private ?\Igloonet\MailkitApi\RPC\Adapters\XmlAdapter $xmlAdapter = null;
 
-	/** @var JsonAdapter  */
-	private $jsonAdapter = null;
-
+	private ?\Igloonet\MailkitApi\RPC\Adapters\JsonAdapter $jsonAdapter = null;
 
 	public function __construct(string $clientId, string $clientMd5)
 	{
@@ -23,10 +20,8 @@ class Client
 	}
 
 	/**
-	 * @param string $method
 	 * @param mixed[] $params
 	 * @param mixed[] $possibleErrors
-	 * @return IRpcResponse
 	 */
 	public function sendRpcRequest(string $method, array $params, array $possibleErrors): IRpcResponse
 	{

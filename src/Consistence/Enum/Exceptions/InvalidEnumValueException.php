@@ -9,12 +9,11 @@ use Igloonet\MailkitApi\Consistence\Type\Type;
 
 class InvalidEnumValueException extends PhpException
 {
-
 	/** @var mixed */
 	private $value;
 
 	/** @var mixed[] */
-	private $availableValues;
+	private readonly array $availableValues;
 
 	/**
 	 * @param mixed $value
@@ -23,12 +22,15 @@ class InvalidEnumValueException extends PhpException
 	 */
 	public function __construct($value, array $availableValues, \Throwable $previous = null)
 	{
-		parent::__construct(sprintf(
-			'%s [%s] is not a valid value, accepted values: %s',
-			$value,
-			Type::getType($value),
-			implode(', ', $availableValues)
-		), $previous);
+		parent::__construct(
+			sprintf(
+				'%s [%s] is not a valid value, accepted values: %s',
+				$value,
+				Type::getType($value),
+				implode(', ', $availableValues)
+			),
+			$previous
+		);
 		$this->value = $value;
 		$this->availableValues = $availableValues;
 	}
@@ -48,5 +50,4 @@ class InvalidEnumValueException extends PhpException
 	{
 		return $this->availableValues;
 	}
-
 }

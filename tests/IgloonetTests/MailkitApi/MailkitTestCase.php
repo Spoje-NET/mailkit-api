@@ -1,4 +1,5 @@
 <?php
+
 namespace IgloonetTests\MailkitApi;
 
 use Tester;

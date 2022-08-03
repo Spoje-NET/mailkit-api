@@ -9,5 +9,4 @@ namespace Igloonet\MailkitApi\Consistence\Exceptions;
  */
 class StaticClassException extends PhpException
 {
-
 }

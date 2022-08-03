@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Igloonet\MailkitApi\RPC\Exceptions;
 
@@ -7,12 +7,6 @@ use Throwable;
 
 class RpcResponseUnknownErrorException extends BaseRpcException
 {
-	/** @var string  */
-	protected $error = '';
-
-	/** @var mixed[] */
-	protected $possibleErrors = [];
-
 	/**
 	 * @param string $method
 	 * @param mixed[] $requestData
@@ -25,15 +19,12 @@ class RpcResponseUnknownErrorException extends BaseRpcException
 	public function __construct(
 		string $method,
 		array $requestData,
-		string $error,
-		array $possibleErrors,
+		protected string $error,
+		protected array $possibleErrors,
 		string $message = '',
 		int $code = 0,
 		Throwable $previous = null
 	) {
-		$this->error = $error;
-		$this->possibleErrors = $possibleErrors;
-
 		parent::__construct($method, $requestData, $message, $code, $previous);
 	}
 

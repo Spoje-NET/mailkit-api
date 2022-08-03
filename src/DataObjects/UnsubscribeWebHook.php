@@ -9,68 +9,45 @@ use Nette\Utils\DateTime;
 
 final class UnsubscribeWebHook
 {
-	/** @var User|null */
-	private $user = null;
+	private ?string $emailId = null;
 
-	/** @var string|null */
-	private $emailId = null;
+	private ?\Nette\Utils\DateTime $date = null;
 
-	/** @var DateTime|null */
-	private $date = null;
+	private ?string $ip = null;
 
-	/** @var string|null */
-	private $ip = null;
+	private ?string $ipOrig = null;
 
-	/** @var string|null */
-	private $ipOrig = null;
+	private ?string $mailingListId = null;
 
-	/** @var string|null */
-	private $mailingListId = null;
+	private ?string $sendId = null;
 
-	/** @var string|null */
-	private $sendId = null;
+	private ?string $messageId = null;
 
-	/** @var string|null */
-	private $messageId = null;
+	private ?string $topicActiveId = null;
 
-	/** @var string|null */
-	private $topicActiveId = null;
+	private ?string $topicInactiveId = null;
 
-	/** @var string|null */
-	private $topicInactiveId = null;
+	private ?string $timeout = null;
 
-	/** @var string|null */
-	private $timeout = null;
+	private ?\Nette\Utils\DateTime $expire = null;
 
-	/** @var DateTime|null */
-	private $expire = null;
+	private ?\Igloonet\MailkitApi\DataObjects\Enums\UnsubscribeMethod $method = null;
 
-	/** @var UnsubscribeMethod|null */
-	private $method = null;
+	private ?string $unsubscribeAnswer = null;
 
-	/** @var string|null */
-	private $unsubscribeAnswer = null;
-
-	/** @var string|null */
-	private $unsubscribeNote = null;
-
-	/** @var mixed[] */
-	private $jsonContent = null;
+	private ?string $unsubscribeNote = null;
 
 	/**
 	 * @param mixed[] $jsonContent
 	 * @param User $user
 	 */
-	private function __construct(array $jsonContent, User $user)
+	private function __construct(private readonly array $jsonContent, private ?\Igloonet\MailkitApi\DataObjects\User $user)
 	{
-		$this->jsonContent = $jsonContent;
-		$this->user = $user;
 	}
 
 	/**
 	 * @param mixed[] $jsonContent
 	 *
-	 * @return static
 	 * @throws InvalidEnumValueException
 	 */
 	public static function fromArray(array $jsonContent): self
@@ -100,128 +77,16 @@ final class UnsubscribeWebHook
 	}
 
 	/**
-	 * @return User|null
+	 * @param mixed[] $jsonContent
 	 */
-	public function getUser(): ?User
+	private static function createUser(array $jsonContent): User
 	{
-		return $this->user;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getEmailId(): ?string
-	{
-		return $this->emailId;
-	}
-
-	/**
-	 * @return DateTime|null
-	 */
-	public function getDate(): ?DateTime
-	{
-		return $this->date;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getIp(): ?string
-	{
-		return $this->ip;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getIpOrig(): ?string
-	{
-		return $this->ipOrig;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getMailingListId(): ?string
-	{
-		return $this->mailingListId;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getSendId(): ?string
-	{
-		return $this->sendId;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getMessageId(): ?string
-	{
-		return $this->messageId;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getTopicActiveId(): ?string
-	{
-		return $this->topicActiveId;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getTopicInactiveId(): ?string
-	{
-		return $this->topicInactiveId;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getTimeout(): ?string
-	{
-		return $this->timeout;
-	}
-
-	/**
-	 * @return null|DateTime
-	 */
-	public function getExpire(): ?DateTime
-	{
-		return $this->expire;
-	}
-
-	/**
-	 * @return UnsubscribeMethod|null
-	 */
-	public function getMethod(): ?UnsubscribeMethod
-	{
-		return $this->method;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getUnsubscribeAnswer(): ?string
-	{
-		return $this->unsubscribeAnswer;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getUnsubscribeNote(): ?string
-	{
-		return $this->unsubscribeNote;
+		return new User($jsonContent['EMAIL']);
 	}
 
 	private static function validateEmptyString(?string $string): ?string
 	{
-		$string = $string ?? '';
+		$string ??= '';
 
 		return trim($string) === '' ? null : trim($string);
 	}
@@ -235,13 +100,78 @@ final class UnsubscribeWebHook
 		return null;
 	}
 
-	/**
-	 * @param mixed[] $jsonContent
-	 *
-	 * @return User
-	 */
-	private static function createUser(array $jsonContent): User
+	public function getUser(): ?User
 	{
-		return new User($jsonContent['EMAIL']);
+		return $this->user;
+	}
+
+	public function getEmailId(): ?string
+	{
+		return $this->emailId;
+	}
+
+	public function getDate(): ?DateTime
+	{
+		return $this->date;
+	}
+
+	public function getIp(): ?string
+	{
+		return $this->ip;
+	}
+
+	public function getIpOrig(): ?string
+	{
+		return $this->ipOrig;
+	}
+
+	public function getMailingListId(): ?string
+	{
+		return $this->mailingListId;
+	}
+
+	public function getSendId(): ?string
+	{
+		return $this->sendId;
+	}
+
+	public function getMessageId(): ?string
+	{
+		return $this->messageId;
+	}
+
+	public function getTopicActiveId(): ?string
+	{
+		return $this->topicActiveId;
+	}
+
+	public function getTopicInactiveId(): ?string
+	{
+		return $this->topicInactiveId;
+	}
+
+	public function getTimeout(): ?string
+	{
+		return $this->timeout;
+	}
+
+	public function getExpire(): ?DateTime
+	{
+		return $this->expire;
+	}
+
+	public function getMethod(): ?UnsubscribeMethod
+	{
+		return $this->method;
+	}
+
+	public function getUnsubscribeAnswer(): ?string
+	{
+		return $this->unsubscribeAnswer;
+	}
+
+	public function getUnsubscribeNote(): ?string
+	{
+		return $this->unsubscribeNote;
 	}
 }

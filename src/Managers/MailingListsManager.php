@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Igloonet\MailkitApi\Managers;
 
@@ -21,40 +21,12 @@ use Nette\Utils\Strings;
 class MailingListsManager extends BaseManager
 {
 	/**
-	 * @return array|MailingList[]
-	 * @throws InvalidEnumValueException
-	 */
-	public function getMailingLists(): array
-	{
-		$rpcResponse = $this->sendRpcRequest('mailkit.mailinglist.list', [], []);
-
-		if ($rpcResponse->isError()) {
-			throw new MailingListsLoadException($rpcResponse);
-		}
-
-		$mailingLists = [];
-
-		foreach ($rpcResponse->getArrayValue() as $mailingListData) {
-			$mailingLists[] = MailingList::create(
-				$mailingListData['ID_USER_LIST'],
-				$mailingListData['NAME'],
-				MailingListStatus::get($mailingListData['STATUS']),
-				$mailingListData['DESCRIPTION']
-			);
-		}
-
-		return $mailingLists;
-	}
-
-	/**
-	 * @param string $name
 	 * @param string|null $description
-	 * @return MailingList
 	 */
 	public function createMailingList(string $name, string $description = null): MailingList
 	{
 		$params = [
-			'name' => $name
+			'name' => $name,
 		];
 
 		if ($description !== null) {
@@ -63,7 +35,7 @@ class MailingListsManager extends BaseManager
 
 		$possibleErrors = [
 			'Missing name of mailing list',
-			'Mailing list exist'
+			'Mailing list exist',
 		];
 
 		$rpcResponse = $this->sendRpcRequest('mailkit.mailinglist.create', $params, $possibleErrors);
@@ -87,31 +59,26 @@ class MailingListsManager extends BaseManager
 		return $mailingList;
 	}
 
-	/**
-	 * @param int $id
-	 * @return bool
-	 */
 	public function flushMailingList(int $id): bool
 	{
 		return $this->deleteMailingList($id, true);
 	}
 
 	/**
-	 * @param int $id
 	 * @param bool $keepList
-	 * @return bool
+	 *
 	 * @throws MailingListDeletionException
 	 */
 	public function deleteMailingList(int $id, $keepList = false): bool
 	{
 		$params = [
 			'ID_user_list' => $id,
-			'keep_list' => $this->getBooleanString($keepList)
+			'keep_list' => $this->getBooleanString($keepList),
 		];
 
 		$possibleErrors = [
 			'Missing ID_user_list',
-			'Invalid ID_user_list'
+			'Invalid ID_user_list',
 		];
 
 		$rpcResponse = $this->sendRpcRequest('mailkit.mailinglist.delete', $params, $possibleErrors);
@@ -137,9 +104,6 @@ class MailingListsManager extends BaseManager
 	}
 
 	/**
-	 * @param string $name
-	 * @param bool $keepList
-	 * @return bool
 	 * @throws MailingListNotFoundException|MailingListsLoadException|MailingListDeletionException
 	 */
 	public function deleteMailingListByName(string $name, bool $keepList = false): bool
@@ -150,8 +114,6 @@ class MailingListsManager extends BaseManager
 	}
 
 	/**
-	 * @param string $name
-	 * @return MailingList
 	 * @throws MailingListNotFoundException|MailingListsLoadException
 	 */
 	public function getMailingListByName(string $name): MailingList
@@ -163,10 +125,6 @@ class MailingListsManager extends BaseManager
 		return $mailingList;
 	}
 
-	/**
-	 * @param string $name
-	 * @return MailingList|null
-	 */
 	public function findMailingListByName(string $name): ?MailingList
 	{
 		foreach ($this->getMailingLists() as $mailingList) {
@@ -183,5 +141,31 @@ class MailingListsManager extends BaseManager
 		}
 
 		return null;
+	}
+
+	/**
+	 * @return array|MailingList[]
+	 * @throws InvalidEnumValueException
+	 */
+	public function getMailingLists(): array
+	{
+		$rpcResponse = $this->sendRpcRequest('mailkit.mailinglist.list', [], []);
+
+		if ($rpcResponse->isError()) {
+			throw new MailingListsLoadException($rpcResponse);
+		}
+
+		$mailingLists = [];
+
+		foreach ($rpcResponse->getArrayValue() as $mailingListData) {
+			$mailingLists[] = MailingList::create(
+				$mailingListData['ID_USER_LIST'],
+				$mailingListData['NAME'],
+				MailingListStatus::get($mailingListData['STATUS']),
+				$mailingListData['DESCRIPTION']
+			);
+		}
+
+		return $mailingLists;
 	}
 }

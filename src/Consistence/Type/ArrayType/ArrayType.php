@@ -11,8 +11,8 @@ use Igloonet\MailkitApi\Consistence\ObjectPrototype;
 
 class ArrayType extends ObjectPrototype
 {
-	public const STRICT_TRUE = true;
-	public const STRICT_FALSE = false;
+	final public const STRICT_TRUE = true;
+	final public const STRICT_FALSE = false;
 
 	/**
 	 * @throws StaticClassException
@@ -26,36 +26,18 @@ class ArrayType extends ObjectPrototype
 	 * Wrapper for array_key_exists
 	 *
 	 * @param mixed[] $haystack
-	 * @param int|string $key
 	 *
-	 * @return bool
 	 */
-	public static function containsKey(array $haystack, $key): bool
+	public static function containsKey(array $haystack, int|string $key): bool
 	{
 		return array_key_exists($key, $haystack);
-	}
-
-	/**
-	 * Wrapper for PHP in_array, provides safer default parameter
-	 *
-	 * @param mixed[] $haystack
-	 * @param mixed $needle
-	 * @param bool $strict
-	 *
-	 * @return bool
-	 */
-	public static function containsValue(array $haystack, $needle, bool $strict = self::STRICT_TRUE): bool
-	{
-		return in_array($needle, $haystack, $strict);
 	}
 
 	/**
 	 * Returns true when callback(\Consistence\Type\ArrayType\KeyValuePair) is at least once trueish
 	 *
 	 * @param mixed[] $haystack
-	 * @param \Closure $callback
 	 *
-	 * @return bool
 	 * @throws InvalidArgumentTypeException
 	 */
 	public static function containsByCallback(array $haystack, Closure $callback): bool
@@ -66,185 +48,10 @@ class ArrayType extends ObjectPrototype
 	}
 
 	/**
-	 * Returns true when callback(key) is at least once trueish
-	 *
-	 * @param mixed[] $haystack
-	 * @param \Closure $callback
-	 *
-	 * @return bool
-	 */
-	public static function containsKeyByValueCallback(array $haystack, Closure $callback): bool
-	{
-		$result = self::findKeyByValueCallback($haystack, $callback);
-
-		return $result !== null;
-	}
-
-	/**
-	 * Returns true when callback(value) is at least once trueish
-	 *
-	 * @param mixed[] $haystack
-	 * @param \Closure $callback
-	 *
-	 * @return bool
-	 */
-	public static function containsValueByValueCallback(array $haystack, Closure $callback): bool
-	{
-		$result = self::findValueByCallback($haystack, $callback);
-
-		return $result !== null;
-	}
-
-	/**
-	 * Wrapper for PHP array_search, provides safer default parameter. Returns null when value is not found.
-	 *
-	 * @param mixed[] $haystack
-	 * @param mixed $needle
-	 * @param bool $strict
-	 *
-	 * @return int|string|null
-	 */
-	public static function findKey(array $haystack, $needle, bool $strict = self::STRICT_TRUE)
-	{
-		$result = array_search($needle, $haystack, $strict);
-		if ($result === false) {
-			return null;
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Returns key when callback(\Consistence\Type\ArrayType\KeyValuePair) is at least once trueish or returns null
-	 *
-	 * @param mixed[] $haystack
-	 * @param \Closure $callback
-	 *
-	 * @return int|string|null
-	 * @throws InvalidArgumentTypeException
-	 */
-	public static function findKeyByCallback(array $haystack, Closure $callback)
-	{
-		$result = self::findByCallback($haystack, $callback);
-		if ($result === null) {
-			return null;
-		}
-
-		return $result->getKey();
-	}
-
-	/**
-	 * Returns key when callback(value) is at least once trueish or returns null
-	 *
-	 * @param mixed[] $haystack
-	 * @param \Closure $callback
-	 *
-	 * @return int|string|null
-	 */
-	public static function findKeyByValueCallback(array $haystack, Closure $callback)
-	{
-		foreach ($haystack as $key => $value) {
-			if ($callback($value)) {
-				return $key;
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	 * @param mixed[] $haystack
-	 * @param mixed $needle
-	 * @param bool $strict
-	 *
-	 * @return int|string
-	 * @throws ElementDoesNotExistException
-	 */
-	public static function getKey(array $haystack, $needle, bool $strict = self::STRICT_TRUE)
-	{
-		$result = static::findKey($haystack, $needle, $strict);
-		if ($result === null) {
-			throw new ElementDoesNotExistException();
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Returns key when callback(\Consistence\Type\ArrayType\KeyValuePair) is at least once trueish or throws exception
-	 *
-	 * @param mixed[] $haystack
-	 * @param \Closure $callback
-	 *
-	 * @return int|string
-	 * @throws ElementDoesNotExistException
-	 */
-	public static function getKeyByCallback(array $haystack, Closure $callback)
-	{
-		$result = self::findKeyByCallback($haystack, $callback);
-		if ($result === null) {
-			throw new ElementDoesNotExistException();
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Returns key when callback(value) is at least once trueish or throws exception
-	 *
-	 * @param mixed[] $haystack
-	 * @param \Closure $callback
-	 *
-	 * @return int|string
-	 */
-	public static function getKeyByValueCallback(array $haystack, Closure $callback)
-	{
-		$result = self::findKeyByValueCallback($haystack, $callback);
-		if ($result === null) {
-			throw new ElementDoesNotExistException();
-		}
-
-		return $result;
-	}
-
-	/**
-	 * @param mixed[] $haystack
-	 * @param int|string $key
-	 *
-	 * @return mixed|null
-	 */
-	public static function findValue(array $haystack, $key)
-	{
-		if (!array_key_exists($key, $haystack)) {
-			return null;
-		}
-
-		return $haystack[$key];
-	}
-
-	/**
-	 * @param mixed[] $haystack
-	 * @param int|string $key
-	 *
-	 * @return mixed
-	 */
-	public static function getValue(array $haystack, $key)
-	{
-		$result = static::findValue($haystack, $key);
-		if ($result === null) {
-			throw new ElementDoesNotExistException();
-		}
-
-		return $result;
-	}
-
-	/**
 	 * Stops on first occurrence when callback(\Consistence\Type\ArrayType\KeyValuePair) is trueish or returns null
 	 *
 	 * @param mixed[] $haystack
-	 * @param Closure $callback
 	 *
-	 * @return KeyValuePair|null
 	 * @throws InvalidArgumentTypeException
 	 */
 	public static function findByCallback(array $haystack, Closure $callback): ?KeyValuePair
@@ -261,30 +68,53 @@ class ArrayType extends ObjectPrototype
 	}
 
 	/**
-	 * Stops on first occurrence when callback(\Consistence\Type\ArrayType\KeyValuePair) is trueish or throws exception
+	 * Returns true when callback(key) is at least once trueish
 	 *
 	 * @param mixed[] $haystack
-	 * @param Closure $callback
 	 *
-	 * @return KeyValuePair
-	 * @throws ElementDoesNotExistException
-	 * @throws InvalidArgumentTypeException
 	 */
-	public static function getByCallback(array $haystack, Closure $callback): KeyValuePair
+	public static function containsKeyByValueCallback(array $haystack, Closure $callback): bool
 	{
-		$result = static::findByCallback($haystack, $callback);
-		if ($result === null) {
-			throw new ElementDoesNotExistException();
+		$result = self::findKeyByValueCallback($haystack, $callback);
+
+		return $result !== null;
+	}
+
+	/**
+	 * Returns key when callback(value) is at least once trueish or returns null
+	 *
+	 * @param mixed[] $haystack
+	 *
+	 * @return int|string|null
+	 */
+	public static function findKeyByValueCallback(array $haystack, Closure $callback)
+	{
+		foreach ($haystack as $key => $value) {
+			if ($callback($value)) {
+				return $key;
+			}
 		}
 
-		return $result;
+		return null;
+	}
+
+	/**
+	 * Returns true when callback(value) is at least once trueish
+	 *
+	 * @param mixed[] $haystack
+	 *
+	 */
+	public static function containsValueByValueCallback(array $haystack, Closure $callback): bool
+	{
+		$result = self::findValueByCallback($haystack, $callback);
+
+		return $result !== null;
 	}
 
 	/**
 	 * Stops on first occurrence when callback(value) is trueish or returns null
 	 *
 	 * @param mixed[] $haystack
-	 * @param \Closure $callback
 	 *
 	 * @return mixed|null
 	 */
@@ -300,10 +130,112 @@ class ArrayType extends ObjectPrototype
 	}
 
 	/**
+	 * Returns key when callback(\Consistence\Type\ArrayType\KeyValuePair) is at least once trueish or throws exception
+	 *
+	 * @param mixed[] $haystack
+	 *
+	 * @throws ElementDoesNotExistException
+	 */
+	public static function getKeyByCallback(array $haystack, Closure $callback): int|string
+	{
+		$result = self::findKeyByCallback($haystack, $callback);
+		if ($result === null) {
+			throw new ElementDoesNotExistException();
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Returns key when callback(\Consistence\Type\ArrayType\KeyValuePair) is at least once trueish or returns null
+	 *
+	 * @param mixed[] $haystack
+	 *
+	 * @return int|string|null
+	 * @throws InvalidArgumentTypeException
+	 */
+	public static function findKeyByCallback(array $haystack, Closure $callback)
+	{
+		$result = self::findByCallback($haystack, $callback);
+		if ($result === null) {
+			return null;
+		}
+
+		return $result->getKey();
+	}
+
+	/**
+	 * @param mixed[] $haystack
+	 * @param mixed $needle
+	 *
+	 * @throws ElementDoesNotExistException
+	 */
+	public static function getKey(array $haystack, $needle, bool $strict = self::STRICT_TRUE): int|string
+	{
+		$result = static::findKey($haystack, $needle, $strict);
+		if ($result === null) {
+			throw new ElementDoesNotExistException();
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Wrapper for PHP array_search, provides safer default parameter. Returns null when value is not found.
+	 *
+	 * @param mixed[] $haystack
+	 * @param mixed $needle
+	 *
+	 * @return int|string|null
+	 */
+	public static function findKey(array $haystack, $needle, bool $strict = self::STRICT_TRUE)
+	{
+		$result = array_search($needle, $haystack, $strict);
+		if ($result === false) {
+			return null;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Returns key when callback(value) is at least once trueish or throws exception
+	 *
+	 * @param mixed[] $haystack
+	 *
+	 */
+	public static function getKeyByValueCallback(array $haystack, Closure $callback): int|string
+	{
+		$result = self::findKeyByValueCallback($haystack, $callback);
+		if ($result === null) {
+			throw new ElementDoesNotExistException();
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Stops on first occurrence when callback(\Consistence\Type\ArrayType\KeyValuePair) is trueish or throws exception
+	 *
+	 * @param mixed[] $haystack
+	 *
+	 * @throws ElementDoesNotExistException
+	 * @throws InvalidArgumentTypeException
+	 */
+	public static function getByCallback(array $haystack, Closure $callback): KeyValuePair
+	{
+		$result = static::findByCallback($haystack, $callback);
+		if ($result === null) {
+			throw new ElementDoesNotExistException();
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Stops on first occurrence when callback(value) is trueish or throws exception
 	 *
 	 * @param mixed[] $haystack
-	 * @param \Closure $callback
 	 *
 	 * @return mixed
 	 * @throws ElementDoesNotExistException
@@ -322,7 +254,6 @@ class ArrayType extends ObjectPrototype
 	 * Filters arrays by callback(\Consistence\Type\ArrayType\KeyValuePair)
 	 *
 	 * @param mixed[] $haystack
-	 * @param \Closure $callback
 	 *
 	 * @return mixed[] new filtered array
 	 * @throws InvalidArgumentTypeException
@@ -345,7 +276,6 @@ class ArrayType extends ObjectPrototype
 	 * Wrapper for PHP array_filter, executes loose comparison
 	 *
 	 * @param mixed[] $haystack
-	 * @param Closure $callback
 	 *
 	 * @return mixed[] new filtered array
 	 */
@@ -358,7 +288,6 @@ class ArrayType extends ObjectPrototype
 	 * Map array by callback(\Consistence\Type\ArrayType\KeyValuePair)
 	 *
 	 * @param mixed[] $haystack
-	 * @param Closure $callback
 	 *
 	 * @return mixed[] new mapped array
 	 * @throws InvalidArgumentTypeException
@@ -377,10 +306,38 @@ class ArrayType extends ObjectPrototype
 	}
 
 	/**
+	 * @param mixed[] $haystack
+	 *
+	 * @return mixed
+	 */
+	public static function getValue(array $haystack, int|string $key)
+	{
+		$result = static::findValue($haystack, $key);
+		if ($result === null) {
+			throw new ElementDoesNotExistException();
+		}
+
+		return $result;
+	}
+
+	/**
+	 * @param mixed[] $haystack
+	 *
+	 * @return mixed|null
+	 */
+	public static function findValue(array $haystack, int|string $key)
+	{
+		if (!array_key_exists($key, $haystack)) {
+			return null;
+		}
+
+		return $haystack[$key];
+	}
+
+	/**
 	 * Maps array by callback(value)
 	 *
 	 * @param mixed[] $haystack
-	 * @param Closure $callback
 	 *
 	 * @return mixed[] new mapped array
 	 */
@@ -452,7 +409,6 @@ class ArrayType extends ObjectPrototype
 	 * Mimics the behaviour of array_unique, but makes strict comparisons by default
 	 *
 	 * @param mixed[] $haystack
-	 * @param bool $strict
 	 *
 	 * @return mixed[] new array with unique values
 	 */
@@ -469,11 +425,22 @@ class ArrayType extends ObjectPrototype
 	}
 
 	/**
+	 * Wrapper for PHP in_array, provides safer default parameter
+	 *
+	 * @param mixed[] $haystack
+	 * @param mixed $needle
+	 *
+	 */
+	public static function containsValue(array $haystack, $needle, bool $strict = self::STRICT_TRUE): bool
+	{
+		return in_array($needle, $haystack, $strict);
+	}
+
+	/**
 	 * Returns new array with unique values using callback(valueA, valueB),
 	 * values are same if callback returns trueish value
 	 *
 	 * @param mixed[] $haystack
-	 * @param \Closure $callback
 	 *
 	 * @return mixed[] new array with unique values
 	 */

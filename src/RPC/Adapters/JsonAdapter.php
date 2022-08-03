@@ -14,11 +14,10 @@ use Igloonet\MailkitApi\RPC\Responses\JsonErrorRpcResponse;
 use Igloonet\MailkitApi\RPC\Responses\JsonSuccessRpcResponse;
 use Nette\Utils\Json;
 use Nette\Utils\JsonException;
-use Nette\Utils\Strings;
 
 class JsonAdapter extends BaseAdapter
 {
-	public const SUPPORTED_METHODS = [
+	final public const SUPPORTED_METHODS = [
 		'mailkit.mailinglist.list',
 		'mailkit.mailinglist.create',
 		'mailkit.mailinglist.delete',
@@ -46,25 +45,17 @@ class JsonAdapter extends BaseAdapter
 		'mailkit.report.raw.bounces',
 	];
 
-	/** @var string */
-	private $apiUrl = 'https://api.mailkit.eu/json.fcgi';
+	private string $apiUrl = 'https://api.mailkit.eu/json.fcgi';
 
-	/**
-	 * @param string $method
-	 *
-	 * @return bool
-	 */
 	public function supportsMethod(string $method): bool
 	{
 		return in_array($method, self::SUPPORTED_METHODS, true);
 	}
 
 	/**
-	 * @param string $method
 	 * @param mixed[] $params
 	 * @param mixed[] $possibleErrors
 	 *
-	 * @return IRpcResponse
 	 */
 	public function sendRequest(string $method, array $params, array $possibleErrors): IRpcResponse
 	{
@@ -98,7 +89,7 @@ class JsonAdapter extends BaseAdapter
 			$error = $responseData['error'] ?? '';
 			if (trim($error) === 'Unauthorized') {
 				throw new UnauthorizedException($method, $requestData, '', (int) $responseData['error_status']);
-			} elseif (Strings::startsWith(trim($error), 'Disallowed IP')) {
+			} elseif (\str_starts_with(trim($error), 'Disallowed IP')) {
 				throw new UnauthorizedException($method, $requestData, $error, (int) $responseData['error_status']);
 			} elseif (!in_array($error, $possibleErrors, true)) {
 				throw new RpcResponseUnknownErrorException(
@@ -118,7 +109,23 @@ class JsonAdapter extends BaseAdapter
 	}
 
 	/**
-	 * @param string $method
+	 * @param mixed[] $params
+	 *
+	 * @return mixed[]
+	 * @throws JsonException
+	 */
+	protected function getContent(string $method, array $params): array
+	{
+		$requestData = $this->prepareRequestData($method, $params);
+
+		$context = stream_context_create($this->getStreamContextOptions($requestData));
+
+		$content = file_get_contents($this->apiUrl, false, $context);
+
+		return [$requestData, $content];
+	}
+
+	/**
 	 * @param mixed[] $params
 	 *
 	 * @return mixed[]
@@ -148,23 +155,5 @@ class JsonAdapter extends BaseAdapter
 				'content' => Json::encode($data),
 			],
 		];
-	}
-
-	/**
-	 * @param string $method
-	 * @param mixed[] $params
-	 *
-	 * @return mixed[]
-	 * @throws JsonException
-	 */
-	protected function getContent(string $method, array $params): array
-	{
-		$requestData = $this->prepareRequestData($method, $params);
-
-		$context = stream_context_create($this->getStreamContextOptions($requestData));
-
-		$content = file_get_contents($this->apiUrl, false, $context);
-
-		return [$requestData, $content];
 	}
 }

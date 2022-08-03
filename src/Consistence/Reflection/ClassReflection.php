@@ -3,19 +3,17 @@
 namespace Igloonet\MailkitApi\Consistence\Reflection;
 
 use Igloonet\MailkitApi\Consistence\Exceptions\StaticClassException;
-use Igloonet\MailkitApi\Consistence\Type\ArrayType\ArrayType;
 use Igloonet\MailkitApi\Consistence\ObjectPrototype;
+use Igloonet\MailkitApi\Consistence\Type\ArrayType\ArrayType;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
 
 class ClassReflection extends ObjectPrototype
 {
-
-	const FILTER_VISIBILITY_NONE = -1;
-
-	const CASE_SENSITIVE = true;
-	const CASE_INSENSITIVE = false;
+	final const FILTER_VISIBILITY_NONE = -1;
+	final const CASE_SENSITIVE = true;
+	final const CASE_INSENSITIVE = false;
 
 	final public function __construct()
 	{
@@ -25,7 +23,6 @@ class ClassReflection extends ObjectPrototype
 	/**
 	 * Retrieves methods defined only at the same level as given ReflectionClass
 	 *
-	 * @param ReflectionClass $classReflection
 	 * @param integer $filter
 	 *
 	 * @return ReflectionMethod[]
@@ -34,15 +31,13 @@ class ClassReflection extends ObjectPrototype
 	{
 		$methods = $classReflection->getMethods($filter);
 		$className = $classReflection->getName();
-		return ArrayType::filterValuesByCallback($methods, function (ReflectionMethod $method) use ($className) {
-			return $method->class === $className;
-		});
+
+		return ArrayType::filterValuesByCallback($methods, fn(ReflectionMethod $method) => $method->class === $className);
 	}
 
 	/**
 	 * Is method of this name defined in this class?
 	 *
-	 * @param ReflectionClass $classReflection
 	 * @param string $methodName
 	 * @param boolean $caseSensitive should the comparison be case-sensitive? (php methods are not by default, but you should)
 	 *
@@ -52,13 +47,13 @@ class ClassReflection extends ObjectPrototype
 		ReflectionClass $classReflection,
 		$methodName,
 		$caseSensitive = self::CASE_SENSITIVE
-	)
-	{
+	) {
 		try {
 			$methodReflection = $classReflection->getMethod($methodName);
+
 			return $methodReflection->class === $classReflection->getName()
 				&& (!$caseSensitive || $methodReflection->name === $methodName);
-		} catch (\ReflectionException $e) {
+		} catch (\ReflectionException) {
 			return false;
 		}
 	}
@@ -66,7 +61,6 @@ class ClassReflection extends ObjectPrototype
 	/**
 	 * Retrieves properties defined only at the same level as given ReflectionClass
 	 *
-	 * @param ReflectionClass $classReflection
 	 * @param integer $filter
 	 *
 	 * @return ReflectionMethod[]
@@ -75,15 +69,13 @@ class ClassReflection extends ObjectPrototype
 	{
 		$properties = $classReflection->getProperties($filter);
 		$className = $classReflection->getName();
-		return ArrayType::filterValuesByCallback($properties, function (ReflectionProperty $property) use ($className) {
-			return $property->class === $className;
-		});
+
+		return ArrayType::filterValuesByCallback($properties, fn(ReflectionProperty $property) => $property->class === $className);
 	}
 
 	/**
 	 * Is property of this name defined in this class?
 	 *
-	 * @param ReflectionClass $classReflection
 	 * @param string $propertyName
 	 *
 	 * @return boolean
@@ -92,9 +84,24 @@ class ClassReflection extends ObjectPrototype
 	{
 		try {
 			return $classReflection->getProperty($propertyName)->class === $classReflection->getName();
-		} catch (\ReflectionException $e) {
+		} catch (\ReflectionException) {
 			return false;
 		}
+	}
+
+	/**
+	 * Is constant of this name defined in this class?
+	 *
+	 * WARNING: cannot detect redeclarations of the same constant
+	 *
+	 * @param ReflectionClass $classReflection
+	 * @param string $constantName
+	 *
+	 * @return boolean
+	 */
+	public static function hasDeclaredConstant(ReflectionClass $classReflection, $constantName)
+	{
+		return isset(static::getDeclaredConstants($classReflection)[$constantName]);
 	}
 
 	/**
@@ -116,20 +123,4 @@ class ClassReflection extends ObjectPrototype
 
 		return $constants;
 	}
-
-	/**
-	 * Is constant of this name defined in this class?
-	 *
-	 * WARNING: cannot detect redeclarations of the same constant
-	 *
-	 * @param ReflectionClass $classReflection
-	 * @param string $constantName
-	 *
-	 * @return boolean
-	 */
-	public static function hasDeclaredConstant(ReflectionClass $classReflection, $constantName)
-	{
-		return isset(static::getDeclaredConstants($classReflection)[$constantName]);
-	}
-
 }

@@ -28,22 +28,21 @@ class ObjectMixin
 	 * @throws UndefinedMethodException
 	 * @throws InvalidArgumentTypeException
 	 */
-	public static function magicCall($object, string $name): void
+	public static function magicCall($object, string $name): never
 	{
 		Type::checkType($object, 'object');
 
-		throw new UndefinedMethodException(get_class($object), $name);
+		throw new UndefinedMethodException($object::class, $name);
 	}
 
 	/**
 	 * Call to undefined static method
 	 *
-	 * @param string $class
 	 * @param string $name method name
 	 *
 	 * @throws UndefinedMethodException
 	 */
-	public static function magicCallStatic(string $class, string $name): void
+	public static function magicCallStatic(string $class, string $name): never
 	{
 		throw new UndefinedMethodException($class, $name);
 	}
@@ -57,11 +56,11 @@ class ObjectMixin
 	 * @throws UndefinedPropertyException
 	 * @throws InvalidArgumentTypeException
 	 */
-	public static function magicGet($object, string $name): void
+	public static function magicGet($object, string $name): never
 	{
 		Type::checkType($object, 'object');
 
-		throw new UndefinedPropertyException(get_class($object), $name);
+		throw new UndefinedPropertyException($object::class, $name);
 	}
 
 	/**
@@ -73,11 +72,11 @@ class ObjectMixin
 	 * @throws UndefinedPropertyException
 	 * @throws InvalidArgumentTypeException
 	 */
-	public static function magicSet($object, string $name): void
+	public static function magicSet($object, string $name): never
 	{
 		Type::checkType($object, 'object');
 
-		throw new UndefinedPropertyException(get_class($object), $name);
+		throw new UndefinedPropertyException($object::class, $name);
 	}
 
 	/**
@@ -89,11 +88,11 @@ class ObjectMixin
 	 * @throws UndefinedPropertyException
 	 * @throws InvalidArgumentTypeException
 	 */
-	public static function magicIsSet($object, string $name): void
+	public static function magicIsSet($object, string $name): never
 	{
 		Type::checkType($object, 'object');
 
-		throw new UndefinedPropertyException(get_class($object), $name);
+		throw new UndefinedPropertyException($object::class, $name);
 	}
 
 	/**
@@ -105,11 +104,10 @@ class ObjectMixin
 	 * @throws UndefinedPropertyException
 	 * @throws InvalidArgumentTypeException
 	 */
-	public static function magicUnset($object, string $name): void
+	public static function magicUnset($object, string $name): never
 	{
 		Type::checkType($object, 'object');
 
-		throw new UndefinedPropertyException(get_class($object), $name);
+		throw new UndefinedPropertyException($object::class, $name);
 	}
-
 }

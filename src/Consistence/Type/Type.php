@@ -11,14 +11,11 @@ use Traversable;
 
 class Type extends ObjectPrototype
 {
-
-	const SEPARATOR_KEY_TYPE = ':';
-
-	const SUBTYPES_ALLOW = true;
-	const SUBTYPES_DISALLOW = false;
-
-	const TYPE_MIXED = 'mixed';
-	const TYPE_OBJECT = 'object';
+	final const SEPARATOR_KEY_TYPE = ':';
+	final const SUBTYPES_ALLOW = true;
+	final const SUBTYPES_DISALLOW = false;
+	final const TYPE_MIXED = 'mixed';
+	final const TYPE_OBJECT = 'object';
 
 	final public function __construct()
 	{
@@ -26,22 +23,20 @@ class Type extends ObjectPrototype
 	}
 
 	/**
-	 * Returns type of given value, in case of objects returns class name, normalizes all scalar values to lowercase
+	 * Checks if the $value has one of expected types, throws exception if not
 	 *
 	 * @param mixed $value
-	 * @return string
+	 * @param bool $allowSubtypes decides if subtypes of given expected types should be considered a valid value
+	 *
+	 * @throws InvalidArgumentTypeException
+	 * @see hasType for syntax rules
+	 *
 	 */
-	public static function getType($value): string
+	public static function checkType($value, string $expectedTypes, bool $allowSubtypes = self::SUBTYPES_ALLOW): void
 	{
-		if (is_object($value)) {
-			return get_class($value);
+		if (!self::hasType($value, $expectedTypes, $allowSubtypes)) {
+			throw new InvalidArgumentTypeException($value, $expectedTypes);
 		}
-
-		$type = gettype($value);
-
-		$type = self::normalizeType($type);
-
-		return $type;
 	}
 
 	/**
@@ -72,7 +67,6 @@ class Type extends ObjectPrototype
 	 * @param mixed $value
 	 * @param string $expectedTypes
 	 * @param bool $allowSubtypes decides if subtypes of given expected types should be considered a valid value
-	 * @return bool
 	 */
 	public static function hasType($value, string $expectedTypes, bool $allowSubtypes = self::SUBTYPES_ALLOW): bool
 	{
@@ -113,38 +107,32 @@ class Type extends ObjectPrototype
 		return false;
 	}
 
-	/**
-	 * Checks if the $value has one of expected types, throws exception if not
-	 *
-	 * @param mixed $value
-	 * @param string $expectedTypes
-	 * @param bool $allowSubtypes decides if subtypes of given expected types should be considered a valid value
-	 *
-	 * @throws InvalidArgumentTypeException
-	 * @see hasType for syntax rules
-	 *
-	 */
-	public static function checkType($value, string $expectedTypes, bool $allowSubtypes = self::SUBTYPES_ALLOW): void
-	{
-		if (!self::hasType($value, $expectedTypes, $allowSubtypes)) {
-			throw new InvalidArgumentTypeException($value, $expectedTypes);
-		}
-	}
-
 	private static function normalizeType(string $type): string
 	{
-		switch ($type) {
-			case 'double':
-				return 'float';
-			case 'integer':
-				return 'int';
-			case 'boolean':
-				return 'bool';
-			case 'NULL':
-				return 'null';
-			default:
-				return $type;
-		}
+		return match ($type) {
+			'double' => 'float',
+			'integer' => 'int',
+			'boolean' => 'bool',
+			'NULL' => 'null',
+			default => $type,
+		};
 	}
 
+	/**
+	 * Returns type of given value, in case of objects returns class name, normalizes all scalar values to lowercase
+	 *
+	 * @param mixed $value
+	 */
+	public static function getType($value): string
+	{
+		if (is_object($value)) {
+			return $value::class;
+		}
+
+		$type = gettype($value);
+
+		$type = self::normalizeType($type);
+
+		return $type;
+	}
 }

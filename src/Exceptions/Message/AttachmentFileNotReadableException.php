@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Igloonet\MailkitApi\Exceptions\Message;
 
@@ -8,13 +8,8 @@ use Throwable;
 
 class AttachmentFileNotReadableException extends IOException implements AttachmentException
 {
-	/** @var null|string  */
-	private $filePath = null;
-
-	public function __construct(string $filePath, string $message = '', int $code = 0, Throwable $previous = null)
+	public function __construct(private readonly ?string $filePath, string $message = '', int $code = 0, Throwable $previous = null)
 	{
-		$this->filePath = $filePath;
-
 		if (trim($message) === '') {
 			$message = sprintf('File %s is not readable!', $filePath);
 		}
@@ -22,9 +17,6 @@ class AttachmentFileNotReadableException extends IOException implements Attachme
 		parent::__construct($message, $code, $previous);
 	}
 
-	/**
-	 * @return string|null
-	 */
 	public function getFilePath(): ?string
 	{
 		return $this->filePath;

@@ -7,21 +7,32 @@ use Igloonet\MailkitApi\DataObjects\Enums\MailingListStatus;
 
 final class MailingList
 {
-	/** @var int|null */
-	private $id = null;
+	private ?int $id = null;
 
-	/** @var string|null */
-	private $name = null;
+	private ?string $name = null;
 
-	/** @var MailingListStatus|null */
-	private $status = null;
+	private ?\Igloonet\MailkitApi\DataObjects\Enums\MailingListStatus $status = null;
 
-	/** @var string|null */
-	private $description = null;
+	private ?string $description = null;
+
+	public static function create(int $id, string $name, MailingListStatus $status, string $description): self
+	{
+		$mailingList = new self();
+
+		$mailingList->setId($id);
+		$mailingList->setName($name);
+		$mailingList->setStatus($status);
+		$mailingList->setDescription($description);
+
+		return $mailingList;
+	}
+
+	public function getId(): ?int
+	{
+		return $this->id;
+	}
 
 	/**
-	 * @param int|null $id
-	 *
 	 * @return $this
 	 */
 	public function setId(?int $id): self
@@ -31,17 +42,12 @@ final class MailingList
 		return $this;
 	}
 
-	/**
-	 * @return int|null
-	 */
-	public function getId(): ?int
+	public function getName(): ?string
 	{
-		return $this->id;
+		return $this->name;
 	}
 
 	/**
-	 * @param string|null $name
-	 *
 	 * @return $this
 	 */
 	public function setName(?string $name): self
@@ -54,17 +60,12 @@ final class MailingList
 		return $this;
 	}
 
-	/**
-	 * @return string|null
-	 */
-	public function getName(): ?string
+	public function getStatus(): ?MailingListStatus
 	{
-		return $this->name;
+		return $this->status;
 	}
 
 	/**
-	 * @param MailingListStatus|null $status
-	 *
 	 * @return $this
 	 */
 	public function setStatus(?MailingListStatus $status): self
@@ -74,17 +75,12 @@ final class MailingList
 		return $this;
 	}
 
-	/**
-	 * @return MailingListStatus|null
-	 */
-	public function getStatus(): ?MailingListStatus
+	public function getDescription(): ?string
 	{
-		return $this->status;
+		return $this->description;
 	}
 
 	/**
-	 * @param string|null $description
-	 *
 	 * @return $this
 	 */
 	public function setDescription(?string $description): self
@@ -95,33 +91,5 @@ final class MailingList
 		$this->description = trim($description) === '' ? null : trim($description);
 
 		return $this;
-	}
-
-	/**
-	 * @return string|null
-	 */
-	public function getDescription(): ?string
-	{
-		return $this->description;
-	}
-
-	/**
-	 * @param int $id
-	 * @param string $name
-	 * @param MailingListStatus $status
-	 * @param string $description
-	 *
-	 * @return MailingList
-	 */
-	public static function create(int $id, string $name, MailingListStatus $status, string $description): self
-	{
-		$mailingList = new self();
-
-		$mailingList->setId($id);
-		$mailingList->setName($name);
-		$mailingList->setStatus($status);
-		$mailingList->setDescription($description);
-
-		return $mailingList;
 	}
 }

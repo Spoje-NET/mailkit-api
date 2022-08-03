@@ -18,7 +18,7 @@ class WebHooksManager
 			$responseData = Strict::array(Json::decode($content, Json::FORCE_ARRAY));
 
 			return SubscribeWebHook::fromArray($responseData);
-		} catch (JsonException $e) {
+		} catch (JsonException) {
 		}
 
 		return null;
@@ -33,7 +33,7 @@ class WebHooksManager
 			$responseData = Strict::array(Json::decode($content, Json::FORCE_ARRAY));
 
 			return UnsubscribeWebHook::fromArray($responseData);
-		} catch (JsonException $e) {
+		} catch (JsonException) {
 		}
 
 		return null;

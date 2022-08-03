@@ -6,12 +6,9 @@ namespace Igloonet\MailkitApi\Consistence\Exceptions;
 
 class UndefinedMethodException extends PhpException
 {
+	private readonly string $className;
 
-	/** @var string */
-	private $className;
-
-	/** @var string */
-	private $methodName;
+	private readonly string $methodName;
 
 	public function __construct(string $className, string $methodName, \Throwable $previous = null)
 	{
@@ -29,5 +26,4 @@ class UndefinedMethodException extends PhpException
 	{
 		return $this->methodName;
 	}
-
 }
