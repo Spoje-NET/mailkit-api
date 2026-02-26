@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * This file is part of the MailkitApi package
  *
- * https://github.com/Vitexus/mailkit-api/
+ * https://github.com/Spoje-NET/mailkit-api
  *
  * (c) SpojeNet IT s.r.o. <https://spojenet.cz/>
  *
@@ -18,7 +18,6 @@ namespace Igloonet\MailkitApi\RPC\Exceptions;
 abstract class BaseRpcException extends \RuntimeException implements RpcException
 {
     protected string $method = null;
-
     protected mixed $requestData = null;
 
     public function __construct(

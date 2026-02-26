@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * This file is part of the MailkitApi package
  *
- * https://github.com/Vitexus/mailkit-api/
+ * https://github.com/Spoje-NET/mailkit-api
  *
  * (c) SpojeNet IT s.r.o. <https://spojenet.cz/>
  *

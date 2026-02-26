@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * This file is part of the MailkitApi package
  *
- * https://github.com/Vitexus/mailkit-api/
+ * https://github.com/Spoje-NET/mailkit-api
  *
  * (c) SpojeNet IT s.r.o. <https://spojenet.cz/>
  *
@@ -24,14 +24,12 @@ use Nette\Utils\Strings;
 abstract class BaseManager
 {
     public const LANGUAGE_DEFAULT = 'default';
-
     protected Client $client = null;
 
     /**
      * @var array|string[]
      */
     protected array $enabledLanguages = null;
-
     protected string $defaultLanguage = null;
 
     public function __construct(Client $client, array $enabledLanguages, string $defaultLanguage)

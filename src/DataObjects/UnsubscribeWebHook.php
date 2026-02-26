@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * This file is part of the MailkitApi package
  *
- * https://github.com/Vitexus/mailkit-api/
+ * https://github.com/Spoje-NET/mailkit-api
  *
  * (c) SpojeNet IT s.r.o. <https://spojenet.cz/>
  *
@@ -21,33 +21,19 @@ use Nette\Utils\DateTime;
 class UnsubscribeWebHook
 {
     private ?User $user = null;
-
     private ?string $emailId = null;
-
     private ?DateTime $date = null;
-
     private ?string $ip = null;
-
     private ?string $ipOrig = null;
-
     private ?string $mailingListId = null;
-
     private ?string $sendId = null;
-
     private ?string $messageId = null;
-
     private ?string $topicActiveId = null;
-
     private ?string $topicInactiveId = null;
-
     private ?string $timeout = null;
-
     private ?DateTime $expire = null;
-
     private ?UnsubscribeMethod $method = null;
-
     private ?string $unsubscribeAnswer = null;
-
     private ?string $unsubscribeNote = null;
 
     /**

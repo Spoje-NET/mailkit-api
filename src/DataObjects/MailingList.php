@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * This file is part of the MailkitApi package
  *
- * https://github.com/Vitexus/mailkit-api/
+ * https://github.com/Spoje-NET/mailkit-api
  *
  * (c) SpojeNet IT s.r.o. <https://spojenet.cz/>
  *
@@ -20,11 +20,8 @@ use Igloonet\MailkitApi\DataObjects\Enums\MailingListStatus;
 class MailingList
 {
     private ?int $id = null;
-
     private ?string $name = null;
-
     private ?MailingListStatus $status = null;
-
     private ?string $description = null;
 
     /**

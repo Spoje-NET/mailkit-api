@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * This file is part of the MailkitApi package
  *
- * https://github.com/Vitexus/mailkit-api/
+ * https://github.com/Spoje-NET/mailkit-api
  *
  * (c) SpojeNet IT s.r.o. <https://spojenet.cz/>
  *
@@ -26,7 +26,6 @@ use Nette\Utils\Strings;
 class XmlAdapter extends BaseAdapter
 {
     private string $apiUrl = 'https://api.mailkit.eu/rpc.fcgi';
-
     private string $encoding = 'UTF-8';
 
     public function __construct(string $clientId, string $clientMd5, ?string $encoding = null)

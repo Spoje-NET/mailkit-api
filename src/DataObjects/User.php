@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * This file is part of the MailkitApi package
  *
- * https://github.com/Vitexus/mailkit-api/
+ * https://github.com/Spoje-NET/mailkit-api
  *
  * (c) SpojeNet IT s.r.o. <https://spojenet.cz/>
  *
@@ -23,47 +23,26 @@ use Igloonet\MailkitApi\Exceptions\User\InvalidCustomFieldNumberException;
 class User
 {
     public const CUSTOM_FIELDS_CNT = 25;
-
     private ?int $id = null;
-
     private ?UserStatus $status = null;
-
     private ?InsertStatus $insertStatus = null;
-
     private ?string $email = null;
-
     private ?string $firstName = null;
-
     private ?string $lastName = null;
-
     private ?string $prefix = null;
-
     private ?string $vocative = null;
-
     private ?string $nickName = null;
-
     private ?string $company = null;
-
     private ?Gender $gender = null;
-
     private ?string $phone = null;
-
     private ?string $mobile = null;
-
     private ?string $fax = null;
-
     private ?string $street = null;
-
     private ?string $city = null;
-
     private ?string $state = null;
-
     private ?string $country = null;
-
     private ?string $zip = null;
-
     private ?string $replyTo = null;
-
     private ?int $mailingListId = null;
 
     /**

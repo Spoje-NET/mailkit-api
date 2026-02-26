@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * This file is part of the MailkitApi package
  *
- * https://github.com/Vitexus/mailkit-api/
+ * https://github.com/Spoje-NET/mailkit-api
  *
  * (c) SpojeNet IT s.r.o. <https://spojenet.cz/>
  *
@@ -22,11 +22,8 @@ use Igloonet\MailkitApi\RPC\Responses\IRpcResponse;
 class SendMailResult implements IApiMethodResult
 {
     private ?int $emailId = null;
-
     private ?int $sendingId = null;
-
     private ?int $messageId = null;
-
     private ?SendMailResultStatus $status = null;
 
     public function __construct(?int $emailId, ?int $sendingId, ?int $messageId, ?SendMailResultStatus $status)
