@@ -24,13 +24,13 @@ use Nette\Utils\Strings;
 abstract class BaseManager
 {
     public const LANGUAGE_DEFAULT = 'default';
-    protected Client $client = null;
+    protected Client $client;
 
     /**
      * @var array|string[]
      */
-    protected array $enabledLanguages = null;
-    protected string $defaultLanguage = null;
+    protected array $enabledLanguages;
+    protected string $defaultLanguage;
 
     public function __construct(Client $client, array $enabledLanguages, string $defaultLanguage)
     {

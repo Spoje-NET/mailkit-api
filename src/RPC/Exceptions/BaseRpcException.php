@@ -17,7 +17,7 @@ namespace Igloonet\MailkitApi\RPC\Exceptions;
 
 abstract class BaseRpcException extends \RuntimeException implements RpcException
 {
-    protected string $method = null;
+    protected string $method;
     protected mixed $requestData = null;
 
     public function __construct(

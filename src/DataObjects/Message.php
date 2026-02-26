@@ -19,7 +19,7 @@ use Igloonet\MailkitApi\Exceptions\Message\DuplicateAttachmentNameException;
 
 class Message
 {
-    private User $user = null;
+    private User $user;
     private ?string $subject = null;
     private ?string $body = null;
     private array $templateVars = [];

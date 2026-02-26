@@ -19,7 +19,7 @@ use Igloonet\MailkitApi\RPC\Responses\IRpcResponse;
 
 abstract class RpcResponseErrorException extends \RuntimeException implements MailkitApiException
 {
-    private IRpcResponse $rpcResponse = null;
+    private ?IRpcResponse $rpcResponse = null;
 
     public function __construct(
         IRpcResponse $rpcResponse,

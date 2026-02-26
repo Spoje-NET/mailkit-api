@@ -21,9 +21,9 @@ use Igloonet\MailkitApi\Exceptions\Message\AttachmentFileNotReadableException;
 
 class Attachment
 {
-    private string $name = null;
-    private string $filePath = null;
-    private string $content = null;
+    private ?string $name = null;
+    private ?string $filePath = null;
+    private ?string $content = null;
 
     public function __construct(string $name)
     {

@@ -17,8 +17,8 @@ namespace Igloonet\MailkitApi\RPC\Adapters;
 
 abstract class BaseAdapter implements IAdapter
 {
-    protected string $clientId = null;
-    protected string $clientMd5 = null;
+    protected string $clientId;
+    protected string $clientMd5;
 
     public function __construct(string $clientId, string $clientMd5)
     {

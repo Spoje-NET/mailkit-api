@@ -49,7 +49,7 @@ class WebHooksManagerTest extends MailkitTestCase
 		Assert::same('1', $response->getEmailId());
 		Assert::type(DateTime::class, $response->getDate());
 		Assert::same('192.168.100.100', $response->getIp());
-		Assert::same(UnsubscribeMethod::get('api_unsubscribe'), $response->getMethod());
+		Assert::same(UnsubscribeMethod::from('api_unsubscribe'), $response->getMethod());
 	}
 
 	public function testResponseBadIpProcessSubscribe()

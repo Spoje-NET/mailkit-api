@@ -21,8 +21,8 @@ use Igloonet\MailkitApi\RPC\Responses\IRpcResponse;
 
 class Client
 {
-    private XmlAdapter $xmlAdapter = null;
-    private JsonAdapter $jsonAdapter = null;
+    private XmlAdapter $xmlAdapter;
+    private JsonAdapter $jsonAdapter;
 
     public function __construct(string $clientId, string $clientMd5)
     {

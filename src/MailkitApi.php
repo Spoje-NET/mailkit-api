@@ -22,10 +22,10 @@ use Igloonet\MailkitApi\Managers\WebHooksManager;
 
 class MailkitApi
 {
-    private MailingListsManager $mailingListsManager = null;
-    private UsersManager $usersManager = null;
-    private MessagesManager $messagesManager = null;
-    private WebHooksManager $webHooksManager = null;
+    private MailingListsManager $mailingListsManager;
+    private UsersManager $usersManager;
+    private MessagesManager $messagesManager;
+    private WebHooksManager $webHooksManager;
 
     public function __construct(
         MailingListsManager $mailingListsManager,

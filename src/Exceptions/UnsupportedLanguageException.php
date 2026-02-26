@@ -17,7 +17,7 @@ namespace Igloonet\MailkitApi\Exceptions;
 
 class UnsupportedLanguageException extends InvalidArgumentException
 {
-    private string $language = null;
+    private string $language;
 
     public function __construct(string $language, string $message = '', int $code = 0, ?\Throwable $previous = null)
     {
