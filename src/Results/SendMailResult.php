@@ -1,5 +1,5 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Igloonet\MailkitApi\Results;
 
@@ -7,16 +7,65 @@ use Igloonet\MailkitApi\DataObjects\Enums\SendMailResultStatus;
 use Igloonet\MailkitApi\Exceptions\InvalidResponseException;
 use Igloonet\MailkitApi\RPC\Responses\IRpcResponse;
 
-final class SendMailResult implements IApiMethodResult
+class SendMailResult implements IApiMethodResult
 {
-	public function __construct(
-		private readonly ?int $emailId,
-		private readonly ?int $sendingId,
-		private readonly ?int $messageId,
-		private readonly ?\Igloonet\MailkitApi\DataObjects\Enums\SendMailResultStatus $status
-	) {
+	/** @var int|null */
+	private $emailId = null;
+
+	/** @var int|null */
+	private $sendingId = null;
+
+	/** @var int|null */
+	private $messageId = null;
+
+	/** @var SendMailResultStatus|null */
+	private $status = null;
+
+
+	public function __construct(?int $emailId, ?int $sendingId, ?int $messageId, ?SendMailResultStatus $status)
+	{
+		$this->emailId = $emailId;
+		$this->sendingId = $sendingId;
+		$this->messageId = $messageId;
+		$this->status = $status;
 	}
 
+	/**
+	 * @return int|null
+	 */
+	public function getEmailId(): ?int
+	{
+		return $this->emailId;
+	}
+
+	/**
+	 * @return int|null
+	 */
+	public function getSendingId(): ?int
+	{
+		return $this->sendingId;
+	}
+
+	/**
+	 * @return int|null
+	 */
+	public function getMessageId(): ?int
+	{
+		return $this->messageId;
+	}
+
+	/**
+	 * @return SendMailResultStatus|null
+	 */
+	public function getStatus(): ?SendMailResultStatus
+	{
+		return $this->status;
+	}
+
+	/**
+	 * @param IRpcResponse $rpcResponse
+	 * @return SendMailResult
+	 */
 	public static function fromRpcResponse(IRpcResponse $rpcResponse): self
 	{
 		$value = $rpcResponse->getArrayValue();
@@ -27,31 +76,11 @@ final class SendMailResult implements IApiMethodResult
 			}
 		}
 
-		$emailId = is_numeric($value['data']) && (int) $value['data'] > 0 ? (int) $value['data'] : null;
-		$sendingId = is_numeric($value['data2']) && (int) $value['data2'] > 0 ? (int) $value['data2'] : null;
-		$messageId = is_numeric($value['data3']) && (int) $value['data3'] > 0 ? (int) $value['data3'] : null;
-		$status = is_numeric($value['status']) ? SendMailResultStatus::get($value['status']) : null;
+		$emailId = is_numeric($value['data']) && (int)$value['data'] > 0 ? (int)$value['data'] : null;
+		$sendingId = is_numeric($value['data2']) && (int)$value['data2'] > 0 ? (int)$value['data2'] : null;
+		$messageId = is_numeric($value['data3']) && (int)$value['data3'] > 0 ? (int)$value['data3'] : null;
+		$status = is_numeric($value['status']) ? SendMailResultStatus::from((int)$value['status']): null;
 
-		return new self($emailId, $sendingId, $messageId, $status);
-	}
-
-	public function getEmailId(): ?int
-	{
-		return $this->emailId;
-	}
-
-	public function getSendingId(): ?int
-	{
-		return $this->sendingId;
-	}
-
-	public function getMessageId(): ?int
-	{
-		return $this->messageId;
-	}
-
-	public function getStatus(): ?SendMailResultStatus
-	{
-		return $this->status;
+		return new static($emailId, $sendingId, $messageId, $status);
 	}
 }

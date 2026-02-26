@@ -81,7 +81,7 @@ final class SubscribeWebHook
 		$user->setFirstName(self::validateEmptyString($jsonContent['FIRST_NAME']));
 		$user->setLastName(self::validateEmptyString($jsonContent['LAST_NAME']));
 		$user->setFax(self::validateEmptyString($jsonContent['FAX']));
-		$user->setGender(Gender::get($jsonContent['GENDER']));
+		$user->setGender(Gender::from($jsonContent['GENDER']));
 		$user->setMobile(self::validateEmptyString($jsonContent['MOBILE']));
 		$user->setNickName(self::validateEmptyString($jsonContent['NICK_NAME']));
 		$user->setPhone(self::validateEmptyString($jsonContent['PHONE']));

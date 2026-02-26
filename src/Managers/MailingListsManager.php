@@ -161,7 +161,7 @@ class MailingListsManager extends BaseManager
 			$mailingLists[] = MailingList::create(
 				$mailingListData['ID_USER_LIST'],
 				$mailingListData['NAME'],
-				MailingListStatus::get($mailingListData['STATUS']),
+				MailingListStatus::from($mailingListData['STATUS']),
 				$mailingListData['DESCRIPTION']
 			);
 		}

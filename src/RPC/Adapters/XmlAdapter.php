@@ -1,5 +1,5 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Igloonet\MailkitApi\RPC\Adapters;
 
@@ -13,15 +13,12 @@ use Nette\Utils\Strings;
 
 class XmlAdapter extends BaseAdapter
 {
-	private string $apiUrl = 'https://api.mailkit.eu/rpc.fcgi';
+	/** @var string  */
+	private $apiUrl = 'https://api.mailkit.eu/rpc.fcgi';
 
-	private string $encoding = 'UTF-8';
+	/** @var string  */
+	private $encoding = 'UTF-8';
 
-	/**
-	 * @param string $clientId
-	 * @param string $clientMd5
-	 * @param string|null $encoding
-	 */
 	public function __construct(string $clientId, string $clientMd5, string $encoding = null)
 	{
 		parent::__construct($clientId, $clientMd5);
@@ -29,21 +26,27 @@ class XmlAdapter extends BaseAdapter
 		$this->encoding = $encoding ?? $this->encoding;
 	}
 
+	/**
+	 * @param string $method
+	 * @return bool
+	 */
 	public function supportsMethod(string $method): bool
 	{
 		return true; // XML-RPC API supports all possible methods
 	}
 
 	/**
-	 * @param mixed[] $params
-	 * @param mixed[] $possibleErrors
+	 * @param string $method
+	 * @param array $params
+	 * @param array $possibleErrors
+	 * @return IRpcResponse
 	 */
 	public function sendRequest(string $method, array $params, array $possibleErrors): IRpcResponse
 	{
 		$requestData = $this->prepareRequestData($params);
 		$options = [
 			'escaping' => ['markup'],
-			'encoding' => 'utf-8',
+			'encoding' => 'utf-8'
 		];
 
 		/** @var string|boolean $content */
@@ -73,19 +76,19 @@ class XmlAdapter extends BaseAdapter
 					$responseData['faultString'] ?? 'unknown',
 					$responseData['faultCode'] ?? 'unknown'
 				),
-				(int) ($responseData['faultCode'] ?? 0)
+				(int)($responseData['faultCode'] ?? 0)
 			);
 		}
 
 		if (is_string($responseData)) {
 			if (trim($responseData) === 'Unauthorized') {
 				throw new UnauthorizedException($method, $requestData);
-			} elseif (\str_starts_with(trim($responseData), 'Disallowed IP')) {
+			} elseif (str_starts_with(trim($responseData), 'Disallowed IP')) {
 				throw new UnauthorizedException($method, $requestData, $responseData);
 			} else {
 				foreach ($possibleErrors as $possibleError) {
 					if (Strings::compare($responseData, $possibleError) ||
-						($possibleError !== '' && Strings::match($responseData, '~' . $possibleError . '~'))
+						($possibleError !== '' && Strings::match($responseData, '~'.$possibleError.'~'))
 					) {
 						return new XmlErrorRpcResponse($responseData);
 					}
@@ -97,9 +100,8 @@ class XmlAdapter extends BaseAdapter
 	}
 
 	/**
-	 * @param mixed[] $params
-	 *
-	 * @return mixed[]
+	 * @param array $params
+	 * @return array
 	 */
 	private function prepareRequestData(array $params): array
 	{
@@ -110,20 +112,8 @@ class XmlAdapter extends BaseAdapter
 	}
 
 	/**
-	 * @param mixed[] $requestData
-	 * @param mixed[] $options
-	 */
-	protected function getContent(string $method, array $requestData, array $options): string|false
-	{
-		$request = xmlrpc_encode_request($method, $requestData, $options);
-
-		$context = stream_context_create($this->getStreamContextOptions($request));
-
-		return @file_get_contents($this->apiUrl, false, $context);
-	}
-
-	/**
-	 * @return string[][]
+	 * @param string $request
+	 * @return array
 	 */
 	protected function getStreamContextOptions(string $request): array
 	{
@@ -131,8 +121,25 @@ class XmlAdapter extends BaseAdapter
 			'http' => [
 				'method' => 'POST',
 				'header' => 'Content-Type: text/xml',
-				'content' => $request,
-			],
+				'content' => $request
+			]
 		];
+	}
+
+	/**
+	 * @param string $method
+	 * @param array $requestData
+	 * @param array $options
+	 * @return string|false
+	 */
+	protected function getContent(string $method, array $requestData, array $options)
+	{
+		$request = xmlrpc_encode_request($method, $requestData, $options);
+
+		$context = stream_context_create($this->getStreamContextOptions($request));
+
+		$content = @file_get_contents($this->apiUrl, false, $context);
+
+		return $content;
 	}
 }

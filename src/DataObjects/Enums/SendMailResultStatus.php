@@ -1,17 +1,15 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Igloonet\MailkitApi\DataObjects\Enums;
 
-use Igloonet\MailkitApi\Consistence\Enum\Enum;
-
-class SendMailResultStatus extends Enum
+enum SendMailResultStatus: int
 {
-	final const UPDATE = 0;
-	final const INSERT = 1;
-	final const INSERT_UNSUBSCRIBE = 2;
-	final const UPDATE_UNSUBSCRIBE = 3;
-	final const FAULT = 4;
-	final const UPDATE_NOT_SENT = 6;
-	final const INSERT_NOT_SENT = 7;
+	case UPDATE = 0;
+	case INSERT = 1;
+	case INSERT_UNSUBSCRIBE = 2;
+	case UPDATE_UNSUBSCRIBE = 3;
+	case FAULT = 4;
+	case UPDATE_NOT_SENT = 6;
+	case INSERT_NOT_SENT = 7;
 }

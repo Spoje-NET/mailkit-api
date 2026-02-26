@@ -69,7 +69,7 @@ final class UnsubscribeWebHook
 		$subscribe->topicInactiveId = self::validateEmptyString($jsonContent['ID_TOPIC_INACTIVE']);
 		$subscribe->timeout = self::validateEmptyString($jsonContent['TIMEOUT']);
 		$subscribe->expire = new DateTime($jsonContent['EXPIRE']);
-		$subscribe->method = UnsubscribeMethod::get($jsonContent['METHOD']);
+		$subscribe->method = UnsubscribeMethod::from($jsonContent['METHOD']);
 		$subscribe->unsubscribeAnswer = self::validateEmptyString($jsonContent['UNSUBSCRIBE_ANSWER']);
 		$subscribe->unsubscribeNote = self::validateEmptyString($jsonContent['UNSUBSCRIBE_NOTE']);
 

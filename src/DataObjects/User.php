@@ -1,5 +1,5 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Igloonet\MailkitApi\DataObjects;
 
@@ -10,61 +10,81 @@ use Igloonet\MailkitApi\Exceptions\User\InvalidCustomFieldNumberException;
 
 class User
 {
-	final public const CUSTOM_FIELDS_CNT = 25;
+	public const CUSTOM_FIELDS_CNT = 25;
 
-	private ?int $id = null;
+	/** @var int|null */
+	private $id = null;
 
-	private ?\Igloonet\MailkitApi\DataObjects\Enums\UserStatus $status = null;
+	/** @var UserStatus|null  */
+	private $status = null;
 
-	private ?\Igloonet\MailkitApi\DataObjects\Enums\InsertStatus $insertStatus = null;
+	/** @var InsertStatus|null */
+	private $insertStatus = null;
 
-	private ?string $firstName = null;
+	/** @var string|null  */
+	private $email = null;
 
-	private ?string $lastName = null;
+	/** @var string|null  */
+	private $firstName = null;
 
-	private ?string $prefix = null;
+	/** @var string|null  */
+	private $lastName = null;
 
-	private ?string $vocative = null;
+	/** @var string|null */
+	private $prefix = null;
 
-	private ?string $nickName = null;
+	/** @var string|null */
+	private $vocative = null;
 
-	private ?string $company = null;
+	/** @var string|null */
+	private $nickName = null;
 
-	private ?\Igloonet\MailkitApi\DataObjects\Enums\Gender $gender = null;
+	/** @var string|null */
+	private $company = null;
 
-	private ?string $phone = null;
+	/** @var Gender|null */
+	private $gender = null;
 
-	private ?string $mobile = null;
+	/** @var string|null */
+	private $phone = null;
 
-	private ?string $fax = null;
+	/** @var string|null */
+	private $mobile = null;
 
-	private ?string $street = null;
+	/** @var string|null */
+	private $fax = null;
 
-	private ?string $city = null;
+	/** @var string|null */
+	private $street = null;
 
-	private ?string $state = null;
+	/** @var string|null */
+	private $city = null;
 
-	private ?string $country = null;
+	/** @var string|null */
+	private $state = null;
 
-	private ?string $zip = null;
+	/** @var string|null  */
+	private $country = null;
 
-	private ?string $replyTo = null;
+	/** @var string|null */
+	private $zip = null;
 
-	private ?int $mailingListId = null;
+	/** @var string|null */
+	private $replyTo = null;
+
+	/** @var int|null */
+	private $mailingListId = null;
 
 	/** @var array|string[] */
 	private $customFields = [];
 
-	public function __construct(private ?string $email = null)
+	public function __construct(string $email = null)
 	{
-	}
-
-	public function getId(): ?int
-	{
-		return $this->id;
+		$this->email = $email;
 	}
 
 	/**
+	 * @param int|null $id
 	 * @return $this
 	 */
 	public function setId(?int $id): self
@@ -74,12 +94,16 @@ class User
 		return $this;
 	}
 
-	public function getStatus(): ?UserStatus
+	/**
+	 * @return int|null
+	 */
+	public function getId(): ?int
 	{
-		return $this->status;
+		return $this->id;
 	}
 
 	/**
+	 * @param UserStatus|null $status
 	 * @return $this
 	 */
 	public function setStatus(?UserStatus $status): self
@@ -89,12 +113,16 @@ class User
 		return $this;
 	}
 
-	public function getInsertStatus(): ?InsertStatus
+	/**
+	 * @return UserStatus|null
+	 */
+	public function getStatus(): ?UserStatus
 	{
-		return $this->insertStatus;
+		return $this->status;
 	}
 
 	/**
+	 * @param InsertStatus|null $insertStatus
 	 * @return $this
 	 */
 	public function setInsertStatus(?InsertStatus $insertStatus): self
@@ -105,6 +133,15 @@ class User
 	}
 
 	/**
+	 * @return InsertStatus|null
+	 */
+	public function getInsertStatus(): ?InsertStatus
+	{
+		return $this->insertStatus;
+	}
+
+	/**
+	 * @param string|null $email
 	 * @return $this
 	 */
 	public function setEmail(?string $email): self
@@ -114,17 +151,16 @@ class User
 		return $this;
 	}
 
+	/**
+	 * @return string|null
+	 */
 	public function getEmail(): ?string
 	{
 		return $this->email;
 	}
 
-	public function getFirstName(): ?string
-	{
-		return $this->firstName;
-	}
-
 	/**
+	 * @param string|null $firstName
 	 * @return $this
 	 */
 	public function setFirstName(?string $firstName): self
@@ -134,12 +170,16 @@ class User
 		return $this;
 	}
 
-	public function getLastName(): ?string
+	/**
+	 * @return string|null
+	 */
+	public function getFirstName(): ?string
 	{
-		return $this->lastName;
+		return $this->firstName;
 	}
 
 	/**
+	 * @param string|null $lastName
 	 * @return $this
 	 */
 	public function setLastName(?string $lastName): self
@@ -149,12 +189,16 @@ class User
 		return $this;
 	}
 
-	public function getPrefix(): ?string
+	/**
+	 * @return string|null
+	 */
+	public function getLastName(): ?string
 	{
-		return $this->prefix;
+		return $this->lastName;
 	}
 
 	/**
+	 * @param string|null $prefix
 	 * @return $this
 	 */
 	public function setPrefix(?string $prefix): self
@@ -164,12 +208,16 @@ class User
 		return $this;
 	}
 
-	public function getVocative(): ?string
+	/**
+	 * @return string|null
+	 */
+	public function getPrefix(): ?string
 	{
-		return $this->vocative;
+		return $this->prefix;
 	}
 
 	/**
+	 * @param string|null $vocative
 	 * @return $this
 	 */
 	public function setVocative(?string $vocative): self
@@ -179,12 +227,16 @@ class User
 		return $this;
 	}
 
-	public function getNickName(): ?string
+	/**
+	 * @return string|null
+	 */
+	public function getVocative(): ?string
 	{
-		return $this->nickName;
+		return $this->vocative;
 	}
 
 	/**
+	 * @param string|null $nickName
 	 * @return $this
 	 */
 	public function setNickName(?string $nickName): self
@@ -194,12 +246,16 @@ class User
 		return $this;
 	}
 
-	public function getCompany(): ?string
+	/**
+	 * @return string|null
+	 */
+	public function getNickName(): ?string
 	{
-		return $this->company;
+		return $this->nickName;
 	}
 
 	/**
+	 * @param string|null $company
 	 * @return $this
 	 */
 	public function setCompany(?string $company): self
@@ -209,12 +265,16 @@ class User
 		return $this;
 	}
 
-	public function getGender(): ?Gender
+	/**
+	 * @return string|null
+	 */
+	public function getCompany(): ?string
 	{
-		return $this->gender;
+		return $this->company;
 	}
 
 	/**
+	 * @param Gender|null $gender
 	 * @return $this
 	 */
 	public function setGender(?Gender $gender): self
@@ -224,12 +284,28 @@ class User
 		return $this;
 	}
 
-	public function getPhone(): ?string
+	/**
+	 * @return Gender|null
+	 */
+	public function getGender(): ?Gender
 	{
-		return $this->phone;
+		return $this->gender;
 	}
 
 	/**
+	 * @param string $gender
+	 * @return bool
+	 */
+	private function isValidGender(string $gender): bool
+	{
+		return in_array(trim($gender), array_merge(
+			array_column(Gender::cases(), 'value'),
+			['male', 'female', 'muz', 'zena', 'm', 'f']
+		), true);
+	}
+
+	/**
+	 * @param string|null $phone
 	 * @return $this
 	 */
 	public function setPhone(?string $phone): self
@@ -239,12 +315,16 @@ class User
 		return $this;
 	}
 
-	public function getMobile(): ?string
+	/**
+	 * @return string|null
+	 */
+	public function getPhone(): ?string
 	{
-		return $this->mobile;
+		return $this->phone;
 	}
 
 	/**
+	 * @param string|null $mobile
 	 * @return $this
 	 */
 	public function setMobile(?string $mobile): self
@@ -254,12 +334,16 @@ class User
 		return $this;
 	}
 
-	public function getFax(): ?string
+	/**
+	 * @return string|null
+	 */
+	public function getMobile(): ?string
 	{
-		return $this->fax;
+		return $this->mobile;
 	}
 
 	/**
+	 * @param string|null $fax
 	 * @return $this
 	 */
 	public function setFax(?string $fax): self
@@ -269,12 +353,16 @@ class User
 		return $this;
 	}
 
-	public function getStreet(): ?string
+	/**
+	 * @return string|null
+	 */
+	public function getFax(): ?string
 	{
-		return $this->street;
+		return $this->fax;
 	}
 
 	/**
+	 * @param string|null $street
 	 * @return $this
 	 */
 	public function setStreet(?string $street): self
@@ -284,12 +372,16 @@ class User
 		return $this;
 	}
 
-	public function getCity(): ?string
+	/**
+	 * @return string|null
+	 */
+	public function getStreet(): ?string
 	{
-		return $this->city;
+		return $this->street;
 	}
 
 	/**
+	 * @param string|null $city
 	 * @return $this
 	 */
 	public function setCity(?string $city): self
@@ -299,12 +391,17 @@ class User
 		return $this;
 	}
 
-	public function getState(): ?string
+	/**
+	 * @return string|null
+	 */
+	public function getCity(): ?string
 	{
-		return $this->state;
+		return $this->city;
 	}
 
+
 	/**
+	 * @param string|null $state
 	 * @return $this
 	 */
 	public function setState(?string $state): self
@@ -314,12 +411,16 @@ class User
 		return $this;
 	}
 
-	public function getCountry(): ?string
+	/**
+	 * @return string|null
+	 */
+	public function getState(): ?string
 	{
-		return $this->country;
+		return $this->state;
 	}
 
 	/**
+	 * @param string|null $country
 	 * @return $this
 	 */
 	public function setCountry(?string $country): self
@@ -329,12 +430,16 @@ class User
 		return $this;
 	}
 
-	public function getZip(): ?string
+	/**
+	 * @return string|null
+	 */
+	public function getCountry(): ?string
 	{
-		return $this->zip;
+		return $this->country;
 	}
 
 	/**
+	 * @param string|null $zip
 	 * @return $this
 	 */
 	public function setZip(?string $zip): self
@@ -344,12 +449,17 @@ class User
 		return $this;
 	}
 
-	public function getReplyTo(): ?string
+
+	/**
+	 * @return string|null
+	 */
+	public function getZip(): ?string
 	{
-		return $this->replyTo;
+		return $this->zip;
 	}
 
 	/**
+	 * @param string|null $replyTo
 	 * @return $this
 	 */
 	public function setReplyTo(?string $replyTo): self
@@ -359,12 +469,16 @@ class User
 		return $this;
 	}
 
-	public function getMailingListId(): ?int
+	/**
+	 * @return string|null
+	 */
+	public function getReplyTo(): ?string
 	{
-		return $this->mailingListId;
+		return $this->replyTo;
 	}
 
 	/**
+	 * @param int|null $mailingListId
 	 * @return $this
 	 */
 	public function setMailingListId(?int $mailingListId): self
@@ -375,54 +489,40 @@ class User
 	}
 
 	/**
-	 * @return $this
-	 * @throws InvalidCustomFieldNumberException
+	 * @return int|null
 	 */
-	public function removeCustomField(int $fieldNumber): self
+	public function getMailingListId(): ?int
 	{
-		$this->assertValidCustomFieldNumber($fieldNumber);
+		return $this->mailingListId;
+	}
 
-		unset($this->customFields[$fieldNumber]);
-
-		return $this;
+	private function isValidCustomFieldNumber(int $fieldNumber): bool
+	{
+		return $fieldNumber >= 1 && $fieldNumber <= self::CUSTOM_FIELDS_CNT;
 	}
 
 	/**
+	 * @param int $fieldNumber
+	 * @return bool
 	 * @throws InvalidCustomFieldNumberException
 	 */
-	public function getCustomField(int $fieldNumber): ?string
+	private function assertValidCustomFieldNumber(int $fieldNumber): bool
 	{
-		$this->assertValidCustomFieldNumber($fieldNumber);
-
-		return $this->customFields[$fieldNumber] ?? null;
-	}
-
-	/**
-	 * @return array|string[]
-	 */
-	public function getCustomFields(): array
-	{
-		return $this->customFields;
-	}
-
-	/**
-	 * @param mixed[] $customFields
-	 *
-	 * @return $this
-	 * @throws InvalidCustomFieldNumberException
-	 */
-	public function setCustomFields(array $customFields): self
-	{
-		$this->customFields = [];
-
-		foreach ($customFields as $fieldNumber => $value) {
-			$this->setCustomField($fieldNumber, $value);
+		if (!$this->isValidCustomFieldNumber($fieldNumber)) {
+			throw new InvalidCustomFieldNumberException(sprintf(
+				'Invalid custom field number %d. Custom field number must be between %d and %d.',
+				$fieldNumber,
+				1,
+				self::CUSTOM_FIELDS_CNT
+			));
 		}
 
-		return $this;
+		return true;
 	}
 
 	/**
+	 * @param int $fieldNumber
+	 * @param null|string $value
 	 * @return $this
 	 * @throws InvalidCustomFieldNumberException
 	 */
@@ -438,39 +538,52 @@ class User
 	}
 
 	/**
+	 * @param array $customFields
+	 * @return $this
 	 * @throws InvalidCustomFieldNumberException
 	 */
-	private function assertValidCustomFieldNumber(int $fieldNumber): bool
+	public function setCustomFields(array $customFields): self
 	{
-		if (!$this->isValidCustomFieldNumber($fieldNumber)) {
-			throw new InvalidCustomFieldNumberException(
-				sprintf(
-					'Invalid custom field number %d. Custom field number must be between %d and %d.',
-					$fieldNumber,
-					1,
-					self::CUSTOM_FIELDS_CNT
-				)
-			);
+		$this->customFields = [];
+
+		foreach ($customFields as $fieldNumber => $value) {
+			$this->setCustomField($fieldNumber, $value);
 		}
 
-		return true;
+		return $this;
 	}
 
-	private function isValidCustomFieldNumber(int $fieldNumber): bool
+	/**
+	 * @param int $fieldNumber
+	 * @return $this
+	 * @throws InvalidCustomFieldNumberException
+	 */
+	public function removeCustomField(int $fieldNumber): self
 	{
-		return $fieldNumber >= 1 && $fieldNumber <= self::CUSTOM_FIELDS_CNT;
+		$this->assertValidCustomFieldNumber($fieldNumber);
+
+		unset($this->customFields[$fieldNumber]);
+
+		return $this;
 	}
 
-	private function isValidGender(string $gender): bool
+	/**
+	 * @param int $fieldNumber
+	 * @return null|string
+	 * @throws InvalidCustomFieldNumberException
+	 */
+	public function getCustomField(int $fieldNumber): ?string
 	{
-		return in_array(trim($gender), [
-			Gender::getAvailableValues(),
-			'male',
-			'female',
-			'muz',
-			'zena',
-			'm',
-			'f',
-		], true);
+		$this->assertValidCustomFieldNumber($fieldNumber);
+
+		return $this->customFields[$fieldNumber] ?? null;
+	}
+
+	/**
+	 * @return array|string[]
+	 */
+	public function getCustomFields(): array
+	{
+		return $this->customFields;
 	}
 }

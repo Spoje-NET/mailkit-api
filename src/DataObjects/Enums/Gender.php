@@ -1,12 +1,10 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Igloonet\MailkitApi\DataObjects\Enums;
 
-use Igloonet\MailkitApi\Consistence\Enum\Enum;
-
-class Gender extends Enum
+enum Gender: string
 {
-	final const MALE = 'M';
-	final const FEMALE = 'F';
+	case MALE = 'M';
+	case FEMALE = 'F';
 }

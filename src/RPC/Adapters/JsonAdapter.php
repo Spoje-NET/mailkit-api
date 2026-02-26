@@ -1,9 +1,8 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Igloonet\MailkitApi\RPC\Adapters;
 
-use Igloonet\MailkitApi\Helpers\Strict;
 use Igloonet\MailkitApi\RPC\Exceptions\InvalidRpcResponseDataTypeException;
 use Igloonet\MailkitApi\RPC\Exceptions\InvalidRpcResponseException;
 use Igloonet\MailkitApi\RPC\Exceptions\RpcRequestFailedException;
@@ -17,7 +16,7 @@ use Nette\Utils\JsonException;
 
 class JsonAdapter extends BaseAdapter
 {
-	final public const SUPPORTED_METHODS = [
+	public const SUPPORTED_METHODS = [
 		'mailkit.mailinglist.list',
 		'mailkit.mailinglist.create',
 		'mailkit.mailinglist.delete',
@@ -42,24 +41,30 @@ class JsonAdapter extends BaseAdapter
 		'mailkit.report.message.bounces',
 		'mailkit.report.raw.messages',
 		'mailkit.report.raw.responses',
-		'mailkit.report.raw.bounces',
+		'mailkit.report.raw.bounces'
 	];
 
-	private string $apiUrl = 'https://api.mailkit.eu/json.fcgi';
+	/** @var string  */
+	private $apiUrl = 'https://api.mailkit.eu/json.fcgi';
 
+	/**
+	 * @param string $method
+	 * @return bool
+	 */
 	public function supportsMethod(string $method): bool
 	{
 		return in_array($method, self::SUPPORTED_METHODS, true);
 	}
 
 	/**
-	 * @param mixed[] $params
-	 * @param mixed[] $possibleErrors
-	 *
+	 * @param string $method
+	 * @param array $params
+	 * @param array $possibleErrors
+	 * @return IRpcResponse
 	 */
 	public function sendRequest(string $method, array $params, array $possibleErrors): IRpcResponse
 	{
-		[$requestData, $content] = $this->getContent($method, $params);
+		list($requestData, $content) = $this->getContent($method, $params);
 
 		if ($content === false) {
 			throw new RpcRequestFailedException(
@@ -69,7 +74,7 @@ class JsonAdapter extends BaseAdapter
 		}
 
 		try {
-			$responseData = Strict::array(Json::decode($content, Json::FORCE_ARRAY));
+			$responseData = Json::decode($content, Json::FORCE_ARRAY);
 		} catch (JsonException $ex) {
 			throw new InvalidRpcResponseException(
 				$method,
@@ -85,12 +90,12 @@ class JsonAdapter extends BaseAdapter
 			throw new InvalidRpcResponseDataTypeException($method, $requestData, $responseData);
 		}
 
-		if (isset($responseData['error_status']) && (int) $responseData['error_status'] !== 0) {
+		if (isset($responseData['error_status']) && (int)$responseData['error_status'] !== 0) {
 			$error = $responseData['error'] ?? '';
 			if (trim($error) === 'Unauthorized') {
-				throw new UnauthorizedException($method, $requestData, '', (int) $responseData['error_status']);
-			} elseif (\str_starts_with(trim($error), 'Disallowed IP')) {
-				throw new UnauthorizedException($method, $requestData, $error, (int) $responseData['error_status']);
+				throw new UnauthorizedException($method, $requestData, '', (int)$responseData['error_status']);
+			} elseif (str_starts_with(trim($error), 'Disallowed IP')) {
+				throw new UnauthorizedException($method, $requestData, $error, (int)$responseData['error_status']);
 			} elseif (!in_array($error, $possibleErrors, true)) {
 				throw new RpcResponseUnknownErrorException(
 					$method,
@@ -102,16 +107,47 @@ class JsonAdapter extends BaseAdapter
 				);
 			}
 
-			return new JsonErrorRpcResponse($error, (int) $responseData['error_status']);
+			return new JsonErrorRpcResponse($error, (int)$responseData['error_status']);
 		}
 
 		return new JsonSuccessRpcResponse($responseData);
 	}
 
 	/**
-	 * @param mixed[] $params
-	 *
-	 * @return mixed[]
+	 * @param string $method
+	 * @param array $params
+	 * @return array
+	 */
+	private function prepareRequestData(string $method, array $params): array
+	{
+		return [
+			'function' => $method,
+			'id' => $this->clientId,
+			'md5' => $this->clientMd5,
+			'parameters' => $params
+		];
+	}
+
+	/**
+	 * @param array $data
+	 * @return array
+	 * @throws JsonException
+	 */
+	private function getStreamContextOptions(array $data): array
+	{
+		return [
+			'http' => [
+				'method' => 'POST',
+				'header' => 'Content-Type: application/json',
+				'content' => Json::encode($data)
+			]
+		];
+	}
+
+	/**
+	 * @param string $method
+	 * @param array $params
+	 * @return array
 	 * @throws JsonException
 	 */
 	protected function getContent(string $method, array $params): array
@@ -122,38 +158,6 @@ class JsonAdapter extends BaseAdapter
 
 		$content = file_get_contents($this->apiUrl, false, $context);
 
-		return [$requestData, $content];
-	}
-
-	/**
-	 * @param mixed[] $params
-	 *
-	 * @return mixed[]
-	 */
-	private function prepareRequestData(string $method, array $params): array
-	{
-		return [
-			'function' => $method,
-			'id' => $this->clientId,
-			'md5' => $this->clientMd5,
-			'parameters' => $params,
-		];
-	}
-
-	/**
-	 * @param mixed[] $data
-	 *
-	 * @return mixed[]
-	 * @throws JsonException
-	 */
-	private function getStreamContextOptions(array $data): array
-	{
-		return [
-			'http' => [
-				'method' => 'POST',
-				'header' => 'Content-Type: application/json',
-				'content' => Json::encode($data),
-			],
-		];
+		return array($requestData, $content);
 	}
 }

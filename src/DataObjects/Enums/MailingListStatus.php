@@ -1,12 +1,10 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Igloonet\MailkitApi\DataObjects\Enums;
 
-use Igloonet\MailkitApi\Consistence\Enum\Enum;
-
-class MailingListStatus extends Enum
+enum MailingListStatus: string
 {
-	final const STATUS_ENABLED = 'enabled';
-	final const STATUS_DISABLED = 'disabled';
+	case STATUS_ENABLED = 'enabled';
+	case STATUS_DISABLED = 'disabled';
 }
