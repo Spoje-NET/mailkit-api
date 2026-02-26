@@ -1,177 +1,183 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
+
+/**
+ * This file is part of the MailkitApi package
+ *
+ * https://github.com/Vitexus/mailkit-api/
+ *
+ * (c) SpojeNet IT s.r.o. <https://spojenet.cz/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Igloonet\MailkitApi\DataObjects;
 
-use Igloonet\MailkitApi\Consistence\Enum\Exceptions\InvalidEnumValueException;
 use Igloonet\MailkitApi\DataObjects\Enums\UnsubscribeMethod;
 use Nette\Utils\DateTime;
 
-final class UnsubscribeWebHook
+class UnsubscribeWebHook
 {
-	private ?string $emailId = null;
+    private ?User $user = null;
 
-	private ?\Nette\Utils\DateTime $date = null;
+    private ?string $emailId = null;
 
-	private ?string $ip = null;
+    private ?DateTime $date = null;
 
-	private ?string $ipOrig = null;
+    private ?string $ip = null;
 
-	private ?string $mailingListId = null;
+    private ?string $ipOrig = null;
 
-	private ?string $sendId = null;
+    private ?string $mailingListId = null;
 
-	private ?string $messageId = null;
+    private ?string $sendId = null;
 
-	private ?string $topicActiveId = null;
+    private ?string $messageId = null;
 
-	private ?string $topicInactiveId = null;
+    private ?string $topicActiveId = null;
 
-	private ?string $timeout = null;
+    private ?string $topicInactiveId = null;
 
-	private ?\Nette\Utils\DateTime $expire = null;
+    private ?string $timeout = null;
 
-	private ?\Igloonet\MailkitApi\DataObjects\Enums\UnsubscribeMethod $method = null;
+    private ?DateTime $expire = null;
 
-	private ?string $unsubscribeAnswer = null;
+    private ?UnsubscribeMethod $method = null;
 
-	private ?string $unsubscribeNote = null;
+    private ?string $unsubscribeAnswer = null;
 
-	/**
-	 * @param mixed[] $jsonContent
-	 * @param User $user
-	 */
-	private function __construct(private readonly array $jsonContent, private ?\Igloonet\MailkitApi\DataObjects\User $user)
-	{
-	}
+    private ?string $unsubscribeNote = null;
 
-	/**
-	 * @param mixed[] $jsonContent
-	 *
-	 * @throws InvalidEnumValueException
-	 */
-	public static function fromArray(array $jsonContent): self
-	{
-		//validation
+    /**
+     * $jsonContent.
+     */
+    private $jsonContent;
 
-		$user = self::createUser($jsonContent);
-		$subscribe = new self($jsonContent, $user);
+    private function __construct(array $jsonContent, User $user)
+    {
+        $this->jsonContent = $jsonContent;
+        $this->user = $user;
+    }
 
-		$subscribe->user = $user;
-		$subscribe->emailId = self::validateEmptyString($jsonContent['ID_EMAIL']);
-		$subscribe->date = new DateTime($jsonContent['DATE']);
-		$subscribe->ip = self::validateIp($jsonContent['IP']);
-		$subscribe->ipOrig = self::validateIp($jsonContent['IP_ORIG']);
-		$subscribe->mailingListId = self::validateEmptyString($jsonContent['ID_ML']);
-		$subscribe->sendId = self::validateEmptyString($jsonContent['ID_SEND']);
-		$subscribe->messageId = self::validateEmptyString($jsonContent['ID_MESSAGE']);
-		$subscribe->topicActiveId = self::validateEmptyString($jsonContent['ID_TOPIC_ACTIVE']);
-		$subscribe->topicInactiveId = self::validateEmptyString($jsonContent['ID_TOPIC_INACTIVE']);
-		$subscribe->timeout = self::validateEmptyString($jsonContent['TIMEOUT']);
-		$subscribe->expire = new DateTime($jsonContent['EXPIRE']);
-		$subscribe->method = UnsubscribeMethod::from($jsonContent['METHOD']);
-		$subscribe->unsubscribeAnswer = self::validateEmptyString($jsonContent['UNSUBSCRIBE_ANSWER']);
-		$subscribe->unsubscribeNote = self::validateEmptyString($jsonContent['UNSUBSCRIBE_NOTE']);
+    public static function fromArray($jsonContent)
+    {
+        // validation
 
-		return $subscribe;
-	}
+        $user = self::createUser($jsonContent);
+        $subscribe = new static($jsonContent, $user);
 
-	/**
-	 * @param mixed[] $jsonContent
-	 */
-	private static function createUser(array $jsonContent): User
-	{
-		return new User($jsonContent['EMAIL']);
-	}
+        $subscribe->user = $user;
+        $subscribe->emailId = self::validateEmptyString($jsonContent['ID_EMAIL']);
+        $subscribe->date = new DateTime($jsonContent['DATE']);
+        $subscribe->ip = self::validateIp($jsonContent['IP']);
+        $subscribe->ipOrig = self::validateIp($jsonContent['IP_ORIG']);
+        $subscribe->mailingListId = self::validateEmptyString($jsonContent['ID_ML']);
+        $subscribe->sendId = self::validateEmptyString($jsonContent['ID_SEND']);
+        $subscribe->messageId = self::validateEmptyString($jsonContent['ID_MESSAGE']);
+        $subscribe->topicActiveId = self::validateEmptyString($jsonContent['ID_TOPIC_ACTIVE']);
+        $subscribe->topicInactiveId = self::validateEmptyString($jsonContent['ID_TOPIC_INACTIVE']);
+        $subscribe->timeout = self::validateEmptyString($jsonContent['TIMEOUT']);
+        $subscribe->expire = new DateTime($jsonContent['EXPIRE']);
+        $subscribe->method = UnsubscribeMethod::from($jsonContent['METHOD']);
+        $subscribe->unsubscribeAnswer = self::validateEmptyString($jsonContent['UNSUBSCRIBE_ANSWER']);
+        $subscribe->unsubscribeNote = self::validateEmptyString($jsonContent['UNSUBSCRIBE_NOTE']);
 
-	private static function validateEmptyString(?string $string): ?string
-	{
-		$string ??= '';
+        return $subscribe;
+    }
 
-		return trim($string) === '' ? null : trim($string);
-	}
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
 
-	private static function validateIp(?string $ipAddress): ?string
-	{
-		if (filter_var($ipAddress, FILTER_VALIDATE_IP)) {
-			return $ipAddress;
-		}
+    public function getEmailId(): ?string
+    {
+        return $this->emailId;
+    }
 
-		return null;
-	}
+    public function getDate(): ?DateTime
+    {
+        return $this->date;
+    }
 
-	public function getUser(): ?User
-	{
-		return $this->user;
-	}
+    public function getIp(): ?string
+    {
+        return $this->ip;
+    }
 
-	public function getEmailId(): ?string
-	{
-		return $this->emailId;
-	}
+    public function getIpOrig(): ?string
+    {
+        return $this->ipOrig;
+    }
 
-	public function getDate(): ?DateTime
-	{
-		return $this->date;
-	}
+    public function getMailingListId(): ?string
+    {
+        return $this->mailingListId;
+    }
 
-	public function getIp(): ?string
-	{
-		return $this->ip;
-	}
+    public function getSendId(): ?string
+    {
+        return $this->sendId;
+    }
 
-	public function getIpOrig(): ?string
-	{
-		return $this->ipOrig;
-	}
+    public function getMessageId(): ?string
+    {
+        return $this->messageId;
+    }
 
-	public function getMailingListId(): ?string
-	{
-		return $this->mailingListId;
-	}
+    public function getTopicActiveId(): ?string
+    {
+        return $this->topicActiveId;
+    }
 
-	public function getSendId(): ?string
-	{
-		return $this->sendId;
-	}
+    public function getTopicInactiveId(): ?string
+    {
+        return $this->topicInactiveId;
+    }
 
-	public function getMessageId(): ?string
-	{
-		return $this->messageId;
-	}
+    public function getTimeout(): ?string
+    {
+        return $this->timeout;
+    }
 
-	public function getTopicActiveId(): ?string
-	{
-		return $this->topicActiveId;
-	}
+    public function getExpire(): ?DateTime
+    {
+        return $this->expire;
+    }
 
-	public function getTopicInactiveId(): ?string
-	{
-		return $this->topicInactiveId;
-	}
+    public function getMethod(): ?UnsubscribeMethod
+    {
+        return $this->method;
+    }
 
-	public function getTimeout(): ?string
-	{
-		return $this->timeout;
-	}
+    public function getUnsubscribeAnswer(): ?string
+    {
+        return $this->unsubscribeAnswer;
+    }
 
-	public function getExpire(): ?DateTime
-	{
-		return $this->expire;
-	}
+    public function getUnsubscribeNote(): ?string
+    {
+        return $this->unsubscribeNote;
+    }
 
-	public function getMethod(): ?UnsubscribeMethod
-	{
-		return $this->method;
-	}
+    private static function validateEmptyString($string)
+    {
+        return trim($string ?? '') === '' ? null : trim($string);
+    }
 
-	public function getUnsubscribeAnswer(): ?string
-	{
-		return $this->unsubscribeAnswer;
-	}
+    private static function validateIp($ipAddress)
+    {
+        if (filter_var($ipAddress, \FILTER_VALIDATE_IP)) {
+            return $ipAddress;
+        }
 
-	public function getUnsubscribeNote(): ?string
-	{
-		return $this->unsubscribeNote;
-	}
+        return null;
+    }
+
+    private static function createUser(array $jsonContent): User
+    {
+        return new User($jsonContent['EMAIL']);
+    }
 }

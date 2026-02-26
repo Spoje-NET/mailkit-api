@@ -1,41 +1,48 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
+
+/**
+ * This file is part of the MailkitApi package
+ *
+ * https://github.com/Vitexus/mailkit-api/
+ *
+ * (c) SpojeNet IT s.r.o. <https://spojenet.cz/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Igloonet\MailkitApi\Managers;
 
-use Igloonet\MailkitApi\Consistence\Enum\Exceptions\InvalidEnumValueException;
 use Igloonet\MailkitApi\DataObjects\SubscribeWebHook;
 use Igloonet\MailkitApi\DataObjects\UnsubscribeWebHook;
-use Igloonet\MailkitApi\Helpers\Strict;
 use Nette\Utils\Json;
 use Nette\Utils\JsonException;
 
 class WebHooksManager
 {
-	public function processSubscribe(string $content): ?SubscribeWebHook
-	{
-		try {
-			$responseData = Strict::array(Json::decode($content, Json::FORCE_ARRAY));
+    public function processSubscribe($content)
+    {
+        try {
+            $responseData = Json::decode($content, Json::FORCE_ARRAY);
 
-			return SubscribeWebHook::fromArray($responseData);
-		} catch (JsonException) {
-		}
+            return SubscribeWebHook::fromArray($responseData);
+        } catch (JsonException $e) {
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * @throws InvalidEnumValueException
-	 */
-	public function processUnsubscribe(string $content): ?UnsubscribeWebHook
-	{
-		try {
-			$responseData = Strict::array(Json::decode($content, Json::FORCE_ARRAY));
+    public function processUnsubscribe($content)
+    {
+        try {
+            $responseData = Json::decode($content, Json::FORCE_ARRAY);
 
-			return UnsubscribeWebHook::fromArray($responseData);
-		} catch (JsonException) {
-		}
+            return UnsubscribeWebHook::fromArray($responseData);
+        } catch (JsonException $e) {
+        }
 
-		return null;
-	}
+        return null;
+    }
 }

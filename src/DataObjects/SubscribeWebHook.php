@@ -1,185 +1,191 @@
 <?php
-/** @noinspection ALL */
-declare(strict_types = 1);
+
+declare(strict_types=1);
+
+/**
+ * This file is part of the MailkitApi package
+ *
+ * https://github.com/Vitexus/mailkit-api/
+ *
+ * (c) SpojeNet IT s.r.o. <https://spojenet.cz/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Igloonet\MailkitApi\DataObjects;
 
 use Igloonet\MailkitApi\DataObjects\Enums\Gender;
 use Nette\Utils\DateTime;
 
-final class SubscribeWebHook
+class SubscribeWebHook
 {
-	private ?string $emailId = null;
+    private ?User $user = null;
 
-	private ?\Nette\Utils\DateTime $date = null;
+    private ?string $emailId = null;
 
-	private ?string $ip = null;
+    private ?DateTime $date = null;
 
-	private ?string $ipOrig = null;
+    private ?string $ip = null;
 
-	private ?string $mailingListId = null;
+    private ?string $ipOrig = null;
 
-	private ?string $channel = null;
+    private ?string $mailingListId = null;
 
-	private ?string $userAgentString = null;
+    private ?string $channel = null;
 
-	private ?\Nette\Utils\DateTime $dateRequest = null;
+    private ?string $userAgentString = null;
 
-	private ?string $userAgentRequest = null;
+    private ?DateTime $dateRequest = null;
 
-	private ?string $ipRequest = null;
+    private ?string $userAgentRequest = null;
 
-	private ?string $ipOrigRequest = null;
+    private ?string $ipRequest = null;
 
-	private ?string $urlCode = null;
+    private ?string $ipOrigRequest = null;
 
-	/**
-	 * @param mixed[] $jsonContent
-	 * @param User $user
-	 *
-	 * @noinspection PhpPluralMixedCanBeReplacedWithArrayInspection
-	 */
-	private function __construct(private readonly array $jsonContent, private ?\Igloonet\MailkitApi\DataObjects\User $user)
-	{
-	}
+    private ?string $urlCode = null;
 
-	/**
-	 * @param mixed[] $jsonContent
-	 */
-	public static function fromArray(array $jsonContent): self
-	{
-		$user = self::createUser($jsonContent);
-		$subscribe = new self($jsonContent, $user);
+    /**
+     * $jsonContent.
+     */
+    private $jsonContent;
 
-		$subscribe->user = $user;
-		$subscribe->emailId = self::validateEmptyString($jsonContent['ID_EMAIL']);
-		$subscribe->ip = self::validateIp($jsonContent['IP']);
-		$subscribe->ipOrig = self::validateIp($jsonContent['IP_ORIG']);
-		$subscribe->mailingListId = self::validateEmptyString($jsonContent['ID_ML']);
-		$subscribe->channel = self::validateEmptyString($jsonContent['CHANNEL']);
-		$subscribe->userAgentString = self::validateEmptyString($jsonContent['UA']);
-		$subscribe->userAgentRequest = self::validateEmptyString($jsonContent['UA_REQUEST']);
-		$subscribe->ipRequest = self::validateIp($jsonContent['IP_REQUEST']);
-		$subscribe->ipOrigRequest = self::validateIp($jsonContent['IP_ORIG_REQUEST']);
-		$subscribe->urlCode = self::validateEmptyString($jsonContent['URL_CODE']);
+    private function __construct(array $jsonContent, User $user)
+    {
+        $this->jsonContent = $jsonContent;
+        $this->user = $user;
+    }
 
-		try {
-			$subscribe->date = new DateTime($jsonContent['DATE']);
-			$subscribe->dateRequest = new DateTime($jsonContent['DATE_REQUEST']);
-		} catch (\Exception) {
-		}
+    public static function fromArray($jsonContent)
+    {
+        $user = self::createUser($jsonContent);
+        $subscribe = new static($jsonContent, $user);
 
-		return $subscribe;
-	}
+        $subscribe->user = $user;
+        $subscribe->emailId = self::validateEmptyString($jsonContent['ID_EMAIL']);
+        $subscribe->ip = self::validateIp($jsonContent['IP']);
+        $subscribe->ipOrig = self::validateIp($jsonContent['IP_ORIG']);
+        $subscribe->mailingListId = self::validateEmptyString($jsonContent['ID_ML']);
+        $subscribe->channel = self::validateEmptyString($jsonContent['CHANNEL']);
+        $subscribe->userAgentString = self::validateEmptyString($jsonContent['UA']);
+        $subscribe->userAgentRequest = self::validateEmptyString($jsonContent['UA_REQUEST']);
+        $subscribe->ipRequest = self::validateIp($jsonContent['IP_REQUEST']);
+        $subscribe->ipOrigRequest = self::validateIp($jsonContent['IP_ORIG_REQUEST']);
+        $subscribe->urlCode = self::validateEmptyString($jsonContent['URL_CODE']);
 
-	/**
-	 * @param mixed[] $jsonContent
-	 */
-	private static function createUser(array $jsonContent): User
-	{
-		$user = new User($jsonContent['EMAIL']);
-		$user->setFirstName(self::validateEmptyString($jsonContent['FIRST_NAME']));
-		$user->setLastName(self::validateEmptyString($jsonContent['LAST_NAME']));
-		$user->setFax(self::validateEmptyString($jsonContent['FAX']));
-		$user->setGender(Gender::from($jsonContent['GENDER']));
-		$user->setMobile(self::validateEmptyString($jsonContent['MOBILE']));
-		$user->setNickName(self::validateEmptyString($jsonContent['NICK_NAME']));
-		$user->setPhone(self::validateEmptyString($jsonContent['PHONE']));
-		$user->setPrefix(self::validateEmptyString($jsonContent['PREFIX']));
-		$user->setReplyTo(self::validateEmptyString($jsonContent['REPLY_TO']));
-		$user->setState(self::validateEmptyString($jsonContent['STATE']));
-		$user->setStreet(self::validateEmptyString($jsonContent['STREET']));
-		$user->setVocative(self::validateEmptyString($jsonContent['VOCATIVE']));
-		$user->setZip(self::validateEmptyString($jsonContent['ZIP']));
-		$user->setCity(self::validateEmptyString($jsonContent['CITY']));
-		$user->setCompany(self::validateEmptyString($jsonContent['COMPANY']));
-		$user->setCountry(self::validateEmptyString($jsonContent['COUNTRY']));
+        try {
+            $subscribe->date = new DateTime($jsonContent['DATE']);
+            $subscribe->dateRequest = new DateTime($jsonContent['DATE_REQUEST']);
+        } catch (\Exception $e) {
+        }
 
-		for ($i = 1; $i <= User::CUSTOM_FIELDS_CNT; $i++) {
-			$user->setCustomField($i, $jsonContent['CUSTOM' . $i] ?? null);
-		}
+        return $subscribe;
+    }
 
-		return $user;
-	}
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
 
-	private static function validateEmptyString(?string $string): ?string
-	{
-		$string ??= '';
+    public function getEmailId(): ?string
+    {
+        return $this->emailId;
+    }
 
-		return trim($string) === '' ? null : trim($string);
-	}
+    public function getDate(): ?DateTime
+    {
+        return $this->date;
+    }
 
-	private static function validateIp(?string $ipAddress): ?string
-	{
-		if (filter_var($ipAddress, FILTER_VALIDATE_IP)) {
-			return $ipAddress;
-		}
+    public function getIp(): ?string
+    {
+        return $this->ip;
+    }
 
-		return null;
-	}
+    public function getIpOrig(): ?string
+    {
+        return $this->ipOrig;
+    }
 
-	public function getUser(): ?User
-	{
-		return $this->user;
-	}
+    public function getMailingListId(): ?string
+    {
+        return $this->mailingListId;
+    }
 
-	public function getEmailId(): ?string
-	{
-		return $this->emailId;
-	}
+    public function getChannel(): ?string
+    {
+        return $this->channel;
+    }
 
-	public function getDate(): ?DateTime
-	{
-		return $this->date;
-	}
+    public function getUserAgentString(): ?string
+    {
+        return $this->userAgentString;
+    }
 
-	public function getIp(): ?string
-	{
-		return $this->ip;
-	}
+    public function getDateRequest(): ?DateTime
+    {
+        return $this->dateRequest;
+    }
 
-	public function getIpOrig(): ?string
-	{
-		return $this->ipOrig;
-	}
+    public function getUserAgentRequest(): ?string
+    {
+        return $this->userAgentRequest;
+    }
 
-	public function getMailingListId(): ?string
-	{
-		return $this->mailingListId;
-	}
+    public function getIpRequest(): ?string
+    {
+        return $this->ipRequest;
+    }
 
-	public function getChannel(): ?string
-	{
-		return $this->channel;
-	}
+    public function getIpOrigRequest(): ?string
+    {
+        return $this->ipOrigRequest;
+    }
 
-	public function getUserAgentString(): ?string
-	{
-		return $this->userAgentString;
-	}
+    public function getUrlCode(): ?string
+    {
+        return $this->urlCode;
+    }
 
-	public function getDateRequest(): ?DateTime
-	{
-		return $this->dateRequest;
-	}
+    private static function createUser(array $jsonContent): User
+    {
+        $user = new User($jsonContent['EMAIL']);
+        $user->setFirstName(self::validateEmptyString($jsonContent['FIRST_NAME']));
+        $user->setLastName(self::validateEmptyString($jsonContent['LAST_NAME']));
+        $user->setFax(self::validateEmptyString($jsonContent['FAX']));
+        $user->setGender(Gender::from($jsonContent['GENDER']));
+        $user->setMobile(self::validateEmptyString($jsonContent['MOBILE']));
+        $user->setNickName(self::validateEmptyString($jsonContent['NICK_NAME']));
+        $user->setPhone(self::validateEmptyString($jsonContent['PHONE']));
+        $user->setPrefix(self::validateEmptyString($jsonContent['PREFIX']));
+        $user->setReplyTo(self::validateEmptyString($jsonContent['REPLY_TO']));
+        $user->setState(self::validateEmptyString($jsonContent['STATE']));
+        $user->setStreet(self::validateEmptyString($jsonContent['STREET']));
+        $user->setVocative(self::validateEmptyString($jsonContent['VOCATIVE']));
+        $user->setZip(self::validateEmptyString($jsonContent['ZIP']));
+        $user->setCity(self::validateEmptyString($jsonContent['CITY']));
+        $user->setCompany(self::validateEmptyString($jsonContent['COMPANY']));
+        $user->setCountry(self::validateEmptyString($jsonContent['COUNTRY']));
 
-	public function getUserAgentRequest(): ?string
-	{
-		return $this->userAgentRequest;
-	}
+        for ($i = 1; $i <= User::CUSTOM_FIELDS_CNT; ++$i) {
+            $user->setCustomField($i, $jsonContent['CUSTOM'.$i] ?? null);
+        }
 
-	public function getIpRequest(): ?string
-	{
-		return $this->ipRequest;
-	}
+        return $user;
+    }
 
-	public function getIpOrigRequest(): ?string
-	{
-		return $this->ipOrigRequest;
-	}
+    private static function validateEmptyString($string)
+    {
+        return trim($string ?? '') === '' ? null : trim($string);
+    }
 
-	public function getUrlCode(): ?string
-	{
-		return $this->urlCode;
-	}
+    private static function validateIp($ipAddress)
+    {
+        if (filter_var($ipAddress, \FILTER_VALIDATE_IP)) {
+            return $ipAddress;
+        }
+
+        return null;
+    }
 }

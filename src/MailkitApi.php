@@ -1,5 +1,17 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
+
+/**
+ * This file is part of the MailkitApi package
+ *
+ * https://github.com/Vitexus/mailkit-api/
+ *
+ * (c) SpojeNet IT s.r.o. <https://spojenet.cz/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Igloonet\MailkitApi;
 
@@ -10,31 +22,43 @@ use Igloonet\MailkitApi\Managers\WebHooksManager;
 
 class MailkitApi
 {
-	public function __construct(
-		private readonly MailingListsManager $mailingListsManager,
-		private readonly UsersManager $usersManager,
-		private readonly MessagesManager $messagesManager,
-		private readonly WebHooksManager $webHooksManager
-	) {
-	}
+    private MailingListsManager $mailingListsManager = null;
 
-	public function getMailingListsManager(): MailingListsManager
-	{
-		return $this->mailingListsManager;
-	}
+    private UsersManager $usersManager = null;
 
-	public function getUsersManager(): UsersManager
-	{
-		return $this->usersManager;
-	}
+    private MessagesManager $messagesManager = null;
 
-	public function getMessagesManager(): MessagesManager
-	{
-		return $this->messagesManager;
-	}
+    private WebHooksManager $webHooksManager = null;
 
-	public function getWebHooksManager(): WebHooksManager
-	{
-		return $this->webHooksManager;
-	}
+    public function __construct(
+        MailingListsManager $mailingListsManager,
+        UsersManager $usersManager,
+        MessagesManager $messagesManager,
+        WebHooksManager $webHooksManager,
+    ) {
+        $this->mailingListsManager = $mailingListsManager;
+        $this->usersManager = $usersManager;
+        $this->messagesManager = $messagesManager;
+        $this->webHooksManager = $webHooksManager;
+    }
+
+    public function getMailingListsManager(): MailingListsManager
+    {
+        return $this->mailingListsManager;
+    }
+
+    public function getUsersManager(): UsersManager
+    {
+        return $this->usersManager;
+    }
+
+    public function getMessagesManager(): MessagesManager
+    {
+        return $this->messagesManager;
+    }
+
+    public function getWebHooksManager(): WebHooksManager
+    {
+        return $this->webHooksManager;
+    }
 }

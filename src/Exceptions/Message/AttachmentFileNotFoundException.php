@@ -1,24 +1,39 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
+
+/**
+ * This file is part of the MailkitApi package
+ *
+ * https://github.com/Vitexus/mailkit-api/
+ *
+ * (c) SpojeNet IT s.r.o. <https://spojenet.cz/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Igloonet\MailkitApi\Exceptions\Message;
 
 use Igloonet\MailkitApi\Exceptions\IOException;
-use Throwable;
 
 class AttachmentFileNotFoundException extends IOException implements AttachmentException
 {
-	public function __construct(private readonly ?string $filePath, string $message = '', int $code = 0, Throwable $previous = null)
-	{
-		if (trim($message) === '') {
-			$message = sprintf('File %s was not found!', $filePath);
-		}
+    private ?string $filePath = null;
 
-		parent::__construct($message, $code, $previous);
-	}
+    public function __construct(string $filePath, string $message = '', int $code = 0, ?\Throwable $previous = null)
+    {
+        $this->filePath = $filePath;
 
-	public function getFilePath(): ?string
-	{
-		return $this->filePath;
-	}
+        if (trim($message) === '') {
+            $message = sprintf('File %s was not found!', $filePath);
+        }
+
+        parent::__construct($message, $code, $previous);
+    }
+
+    public function getFilePath(): ?string
+    {
+        return $this->filePath;
+    }
 }

@@ -1,40 +1,46 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
+
+/**
+ * This file is part of the MailkitApi package
+ *
+ * https://github.com/Vitexus/mailkit-api/
+ *
+ * (c) SpojeNet IT s.r.o. <https://spojenet.cz/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Igloonet\MailkitApi\RPC\Responses;
 
 interface IRpcResponse
 {
-	public const STATUS_SUCCESS = 'success';
-	public const STATUS_ERROR = 'error';
+    public const STATUS_SUCCESS = 'success';
+    public const STATUS_ERROR = 'error';
 
-	public function getStatus(): string;
+    public function getStatus(): string;
 
-	public function isError(): bool;
+    public function isError(): bool;
 
-	public function getErrorCode(): ?int;
+    public function getErrorCode(): ?int;
 
-	public function getError(): ?string;
+    public function getError(): ?string;
 
-	/**
-	 * @return mixed[]
-	 */
-	public function getArrayValue(): array;
+    public function getArrayValue(): array;
 
-	public function getStringValue(): string;
+    public function getStringValue(): string;
 
-	public function getIntegerValue(): int;
+    public function getIntegerValue(): int;
 
-	public function getBooleanValue(): bool;
+    public function getBooleanValue(): bool;
 
-	/**
-	 * @return mixed[]
-	 */
-	public function getArrayData(): array;
+    public function getArrayData(): array;
 
-	public function getStringData(): string;
+    public function getStringData(): string;
 
-	public function getIntegerData(): int;
+    public function getIntegerData(): int;
 
-	public function getBooleanData(): bool;
+    public function getBooleanData(): bool;
 }

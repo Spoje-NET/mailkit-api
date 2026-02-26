@@ -1,5 +1,17 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
+
+/**
+ * This file is part of the MailkitApi package
+ *
+ * https://github.com/Vitexus/mailkit-api/
+ *
+ * (c) SpojeNet IT s.r.o. <https://spojenet.cz/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Igloonet\MailkitApi\Managers;
 
@@ -16,92 +28,102 @@ use Igloonet\MailkitApi\Results\SendMailResult;
 
 class MessagesManager extends BaseManager implements IMessageManager
 {
-	/**
-	 *
-	 * @throws MessageSendException
-	 */
-	public function sendMail(
-		Message $message,
-		?int $mailingListId,
-		int $campaignId
-	): SendMailResult {
-		$deliveryParams = [
-			'send_to' => $message->getUser()->getEmail(),
-			'subject' => $message->getSubject(),
-			'message_data' => $this->encodeString($message->getBody()),
-		];
+    /**
+     * @throws MessageSendException
+     */
+    public function sendMail(
+        Message $message,
+        ?int $mailingListId,
+        int $campaignId,
+    ): SendMailResult {
+        $deliveryParams = [
+            'send_to' => $message->getUser()->getEmail(),
+            'subject' => $message->getSubject(),
+            'message_data' => $this->encodeString($message->getBody()),
+        ];
 
-		$deliveryParams = $this->filterNullsFromArray($deliveryParams);
+        $deliveryParams = $this->filterNullsFromArray($deliveryParams);
 
-		$templateVars = $message->getTemplateVars();
+        $templateVars = $message->getTemplateVars();
 
-		array_walk_recursive($templateVars, function (&$item, $key) {
-			$item = $this->encodeString((string) $item);
-		});
+        array_walk_recursive($templateVars, function (&$item, $key): void {
+            $item = $this->encodeString((string) $item);
+        });
 
-		if (count($templateVars) > 0) {
-			$deliveryParams['content'] = $templateVars;
-		}
+        if (\count($templateVars) > 0) {
+            $deliveryParams['content'] = $templateVars;
+        }
 
-		$params = [
-			'mailinglist_id' => $mailingListId ?? $message->getUser()->getMailingListId(),
-			'campaign_id' => $campaignId,
-			$deliveryParams,
-		];
+        $params = [
+            'mailinglist_id' => $mailingListId ?? $message->getUser()->getMailingListId(),
+            'campaign_id' => $campaignId,
+            $deliveryParams,
+        ];
 
-		foreach ($this->getUserDataSectionsForMessage($message) as $dataSection) {
-			$params[] = $dataSection;
-		}
+        foreach ($this->getUserDataSectionsForMessage($message) as $dataSection) {
+            $params[] = $dataSection;
+        }
 
-		foreach ($message->getAttachments() as $attachment) {
-			$params[] = [
-				'name' => $attachment->getName(),
-				'data' => $this->encodeString($attachment->getContent()),
-			];
-		}
+        foreach ($message->getAttachments() as $attachment) {
+            $params[] = [
+                'name' => $attachment->getName(),
+                'data' => $this->encodeString($attachment->getContent()),
+            ];
+        }
 
-		$possibleErrors = [
-			'Missing ID_mailing_list',
-			'Invalid ID_mailing_list',
-			'Missing ID_message',
-			'Invalid ID_message',
-			'Missing send_to',
-			'Missing sender address',
-			'Attachment is not allowed',
-		];
+        $possibleErrors = [
+            'Missing ID_mailing_list',
+            'Invalid ID_mailing_list',
+            'Missing ID_message',
+            'Invalid ID_message',
+            'Missing send_to',
+            'Missing sender address',
+            'Attachment is not allowed',
+        ];
 
-		$rpcResponse = $this->sendRpcRequest('mailkit.sendmail', $params, $possibleErrors);
+        $rpcResponse = $this->sendRpcRequest('mailkit.sendmail', $params, $possibleErrors);
 
-		if ($rpcResponse->isError()) {
-			switch ($rpcResponse->getError()) {
-				case 'Missing ID_mailing_list':
-					throw new MessageSendMissingMailingListIdException($rpcResponse);
-				case 'Invalid ID_mailing_list':
-					throw new MessageSendInvalidMailingListIdException($rpcResponse);
-				case 'Missing ID_message':
-					throw new MessageSendMissingCampaignIdException($rpcResponse);
-				case 'Invalid ID_message':
-					throw new MessageSendInvalidCampaignIdException($rpcResponse);
-				case 'Missing send_to':
-					throw new MessageSendMissingSendToException($rpcResponse);
-				case 'Missing sender address':
-					throw new MessageSendMissingSenderAddressException($rpcResponse);
-				case 'Attachment is not allowed':
-					throw new MessageSendAttachmentNotAllowedException($rpcResponse);
-			}
-		}
+        if ($rpcResponse->isError()) {
+            switch ($rpcResponse->getError()) {
+                case 'Missing ID_mailing_list':
+                    throw new MessageSendMissingMailingListIdException($rpcResponse);
 
-		return SendMailResult::fromRpcResponse($rpcResponse);
-	}
+                    break;
+                case 'Invalid ID_mailing_list':
+                    throw new MessageSendInvalidMailingListIdException($rpcResponse);
 
-	/**
-	 * @return mixed[]
-	 */
-	private function getUserDataSectionsForMessage(Message $message): array
-	{
-		$dataSections = $this->getUserDataSections($message->getUser(), null, null);
-		unset($dataSections[0]['email']);
+                    break;
+                case 'Missing ID_message':
+                    throw new MessageSendMissingCampaignIdException($rpcResponse);
 
-		return $this->fixEmptyUserDataSections($dataSections);
-	}
+                    break;
+                case 'Invalid ID_message':
+                    throw new MessageSendInvalidCampaignIdException($rpcResponse);
+
+                    break;
+                case 'Missing send_to':
+                    throw new MessageSendMissingSendToException($rpcResponse);
+
+                    break;
+                case 'Missing sender address':
+                    throw new MessageSendMissingSenderAddressException($rpcResponse);
+
+                    break;
+                case 'Attachment is not allowed':
+                    throw new MessageSendAttachmentNotAllowedException($rpcResponse);
+
+                    break;
+            }
+        }
+
+        return SendMailResult::fromRpcResponse($rpcResponse);
+    }
+
+    private function getUserDataSectionsForMessage(Message $message): array
+    {
+        $dataSections = $this->getUserDataSections($message->getUser(), null, null);
+        unset($dataSections[0]['email']);
+
+        return $this->fixEmptyUserDataSections($dataSections);
+    }
 }

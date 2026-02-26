@@ -1,9 +1,20 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
+
+/**
+ * This file is part of the MailkitApi package
+ *
+ * https://github.com/Vitexus/mailkit-api/
+ *
+ * (c) SpojeNet IT s.r.o. <https://spojenet.cz/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Igloonet\MailkitApi\Managers;
 
-use Igloonet\MailkitApi\Consistence\Enum\Exceptions\InvalidEnumValueException;
 use Igloonet\MailkitApi\DataObjects\Enums\MailingListStatus;
 use Igloonet\MailkitApi\DataObjects\MailingList;
 use Igloonet\MailkitApi\Exceptions\MailingList\MailingListCreationUnknownErrorException;
@@ -15,157 +26,167 @@ use Igloonet\MailkitApi\Exceptions\MailingList\MailingListMissingIdException;
 use Igloonet\MailkitApi\Exceptions\MailingList\MailingListMissingNameException;
 use Igloonet\MailkitApi\Exceptions\MailingList\MailingListNotFoundException;
 use Igloonet\MailkitApi\Exceptions\MailingList\MailingListsLoadException;
-use Igloonet\MailkitApi\Helpers\Strict;
 use Nette\Utils\Strings;
 
 class MailingListsManager extends BaseManager
 {
-	/**
-	 * @param string|null $description
-	 */
-	public function createMailingList(string $name, string $description = null): MailingList
-	{
-		$params = [
-			'name' => $name,
-		];
+    /**
+     * @return array|MailingList[]
+     */
+    public function getMailingLists(): array
+    {
+        $rpcResponse = $this->sendRpcRequest('mailkit.mailinglist.list', [], []);
 
-		if ($description !== null) {
-			$params['description'] = $description;
-		}
+        if ($rpcResponse->isError()) {
+            throw new MailingListsLoadException($rpcResponse);
+        }
 
-		$possibleErrors = [
-			'Missing name of mailing list',
-			'Mailing list exist',
-		];
+        $mailingLists = [];
 
-		$rpcResponse = $this->sendRpcRequest('mailkit.mailinglist.create', $params, $possibleErrors);
+        foreach ($rpcResponse->getArrayValue() as $mailingListData) {
+            $mailingLists[] = MailingList::create(
+                $mailingListData['ID_USER_LIST'],
+                $mailingListData['NAME'],
+                MailingListStatus::from($mailingListData['STATUS']),
+                $mailingListData['DESCRIPTION'],
+            );
+        }
 
-		if ($rpcResponse->isError()) {
-			switch ($rpcResponse->getError()) {
-				case 'Missing name of mailing list':
-					throw new MailingListMissingNameException($rpcResponse);
-				case 'Mailing list exist':
-					throw new MailingListExistsException($rpcResponse);
-				default:
-					throw new MailingListCreationUnknownErrorException($rpcResponse);
-			}
-		}
+        return $mailingLists;
+    }
 
-		$mailingList = new MailingList();
-		$mailingList->setId($rpcResponse->getIntegerData());
-		$mailingList->setName($name);
-		$mailingList->setDescription($description);
+    public function createMailingList(string $name, ?string $description = null): MailingList
+    {
+        $params = [
+            'name' => $name,
+        ];
 
-		return $mailingList;
-	}
+        if ($description !== null) {
+            $params['description'] = $description;
+        }
 
-	public function flushMailingList(int $id): bool
-	{
-		return $this->deleteMailingList($id, true);
-	}
+        $possibleErrors = [
+            'Missing name of mailing list',
+            'Mailing list exist',
+        ];
 
-	/**
-	 * @param bool $keepList
-	 *
-	 * @throws MailingListDeletionException
-	 */
-	public function deleteMailingList(int $id, $keepList = false): bool
-	{
-		$params = [
-			'ID_user_list' => $id,
-			'keep_list' => $this->getBooleanString($keepList),
-		];
+        $rpcResponse = $this->sendRpcRequest('mailkit.mailinglist.create', $params, $possibleErrors);
 
-		$possibleErrors = [
-			'Missing ID_user_list',
-			'Invalid ID_user_list',
-		];
+        if ($rpcResponse->isError()) {
+            switch ($rpcResponse->getError()) {
+                case 'Missing name of mailing list':
+                    throw new MailingListMissingNameException($rpcResponse);
 
-		$rpcResponse = $this->sendRpcRequest('mailkit.mailinglist.delete', $params, $possibleErrors);
+                    break;
+                case 'Mailing list exist':
+                    throw new MailingListExistsException($rpcResponse);
 
-		if ($rpcResponse->isError()) {
-			switch ($rpcResponse->getError()) {
-				case 'Missing ID_user_list':
-					throw new MailingListMissingIdException($rpcResponse);
-				case 'Invalid ID_user_list':
-					throw new MailingListInvalidIdException($rpcResponse);
-				default:
-					throw new MailingListDeletionUnknownErrorException($rpcResponse);
-			}
-		}
+                    break;
 
-		$message = trim($rpcResponse->getStringData());
+                default:
+                    throw new MailingListCreationUnknownErrorException($rpcResponse);
 
-		if ($message === 'OK') {
-			return true;
-		}
+                    break;
+            }
+        }
 
-		throw new MailingListDeletionUnknownErrorException($rpcResponse, $message);
-	}
+        $mailingList = new MailingList();
+        $mailingList->setId($rpcResponse->getIntegerData());
+        $mailingList->setName($name);
+        $mailingList->setDescription($description);
 
-	/**
-	 * @throws MailingListNotFoundException|MailingListsLoadException|MailingListDeletionException
-	 */
-	public function deleteMailingListByName(string $name, bool $keepList = false): bool
-	{
-		$mailingList = $this->getMailingListByName($name);
+        return $mailingList;
+    }
 
-		return $this->deleteMailingList(Strict::integer($mailingList->getId()), $keepList);
-	}
+    public function flushMailingList(int $id): bool
+    {
+        return $this->deleteMailingList($id, true);
+    }
 
-	/**
-	 * @throws MailingListNotFoundException|MailingListsLoadException
-	 */
-	public function getMailingListByName(string $name): MailingList
-	{
-		if (($mailingList = $this->findMailingListByName($name)) === null) {
-			throw new MailingListNotFoundException(sprintf('Mailing list "%s" was not found!', $name));
-		}
+    /**
+     * @param bool $keepList
+     *
+     * @throws MailingListDeletionException
+     */
+    public function deleteMailingList(int $id, $keepList = false): bool
+    {
+        $params = [
+            'ID_user_list' => $id,
+            'keep_list' => $this->getBooleanString($keepList),
+        ];
 
-		return $mailingList;
-	}
+        $possibleErrors = [
+            'Missing ID_user_list',
+            'Invalid ID_user_list',
+        ];
 
-	public function findMailingListByName(string $name): ?MailingList
-	{
-		foreach ($this->getMailingLists() as $mailingList) {
-			if (Strings::compare($mailingList->getName(), $name)) {
-				return $mailingList;
-			}
-		}
+        $rpcResponse = $this->sendRpcRequest('mailkit.mailinglist.delete', $params, $possibleErrors);
 
-		$nameLower = Strings::lower($name);
-		foreach ($this->getMailingLists() as $mailingList) {
-			if (Strings::compare(Strings::lower($mailingList->getName()), $nameLower)) {
-				return $mailingList;
-			}
-		}
+        if ($rpcResponse->isError()) {
+            switch ($rpcResponse->getError()) {
+                case 'Missing ID_user_list':
+                    throw new MailingListMissingIdException($rpcResponse);
 
-		return null;
-	}
+                    break;
+                case 'Invalid ID_user_list':
+                    throw new MailingListInvalidIdException($rpcResponse);
 
-	/**
-	 * @return array|MailingList[]
-	 * @throws InvalidEnumValueException
-	 */
-	public function getMailingLists(): array
-	{
-		$rpcResponse = $this->sendRpcRequest('mailkit.mailinglist.list', [], []);
+                    break;
 
-		if ($rpcResponse->isError()) {
-			throw new MailingListsLoadException($rpcResponse);
-		}
+                default:
+                    throw new MailingListDeletionUnknownErrorException($rpcResponse);
 
-		$mailingLists = [];
+                    break;
+            }
+        }
 
-		foreach ($rpcResponse->getArrayValue() as $mailingListData) {
-			$mailingLists[] = MailingList::create(
-				$mailingListData['ID_USER_LIST'],
-				$mailingListData['NAME'],
-				MailingListStatus::from($mailingListData['STATUS']),
-				$mailingListData['DESCRIPTION']
-			);
-		}
+        $message = trim($rpcResponse->getStringData());
 
-		return $mailingLists;
-	}
+        if ($message === 'OK') {
+            return true;
+        }
+
+        throw new MailingListDeletionUnknownErrorException($rpcResponse, $message);
+    }
+
+    /**
+     * @throws MailingListDeletionException|MailingListNotFoundException|MailingListsLoadException
+     */
+    public function deleteMailingListByName(string $name, bool $keepList = false): bool
+    {
+        $mailingList = $this->getMailingListByName($name);
+
+        return $this->deleteMailingList($mailingList->getId(), $keepList);
+    }
+
+    /**
+     * @throws MailingListNotFoundException|MailingListsLoadException
+     */
+    public function getMailingListByName(string $name): MailingList
+    {
+        if (($mailingList = $this->findMailingListByName($name)) === null) {
+            throw new MailingListNotFoundException(sprintf('Mailing list "%s" was not found!', $name));
+        }
+
+        return $mailingList;
+    }
+
+    public function findMailingListByName(string $name): ?MailingList
+    {
+        foreach ($this->getMailingLists() as $mailingList) {
+            if (Strings::compare($mailingList->getName(), $name)) {
+                return $mailingList;
+            }
+        }
+
+        $nameLower = Strings::lower($name);
+
+        foreach ($this->getMailingLists() as $mailingList) {
+            if (Strings::compare(Strings::lower($mailingList->getName()), $nameLower)) {
+                return $mailingList;
+            }
+        }
+
+        return null;
+    }
 }

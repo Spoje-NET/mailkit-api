@@ -1,5 +1,17 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
+
+/**
+ * This file is part of the MailkitApi package
+ *
+ * https://github.com/Vitexus/mailkit-api/
+ *
+ * (c) SpojeNet IT s.r.o. <https://spojenet.cz/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Igloonet\MailkitApi\DataObjects;
 
@@ -7,69 +19,69 @@ use Igloonet\MailkitApi\Exceptions\Message\AttachmentEmptyContentException;
 use Igloonet\MailkitApi\Exceptions\Message\AttachmentFileNotFoundException;
 use Igloonet\MailkitApi\Exceptions\Message\AttachmentFileNotReadableException;
 
-final class Attachment
+class Attachment
 {
-	private ?string $filePath = null;
+    private string $name = null;
 
-	private ?string $content = null;
+    private string $filePath = null;
 
-	public function __construct(private readonly string $name)
-	{
-	}
+    private string $content = null;
 
-	/**
-	 * @param string|null $name
-	 */
-	public static function fromFile(string $filePath, string $name = null): self
-	{
-		if (trim($name ?? '') === '') {
-			$name = pathinfo($filePath, PATHINFO_BASENAME);
-		}
+    public function __construct(string $name)
+    {
+        $this->name = $name;
+    }
 
-		$attachment = new self((string) $name);
-		$attachment->filePath = $filePath;
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
 
-		return $attachment;
-	}
+    public function getContent(): string
+    {
+        if ($this->content !== null) {
+            return $this->content;
+        }
 
-	public static function fromString(string $content, string $name): self
-	{
-		$attachment = new self($name);
+        if ($this->filePath !== null) {
+            if (!file_exists($this->filePath)) {
+                throw new AttachmentFileNotFoundException($this->filePath);
+            }
 
-		$attachment->content = $content;
+            if (!is_readable($this->filePath)) {
+                throw new AttachmentFileNotReadableException($this->filePath);
+            }
 
-		return $attachment;
-	}
+            $fileContent = file_get_contents($this->filePath);
 
-	public function getName(): ?string
-	{
-		return $this->name;
-	}
+            if ($fileContent !== false) {
+                return $fileContent;
+            }
+        }
 
-	public function getContent(): string
-	{
-		if ($this->content !== null) {
-			return $this->content;
-		}
+        throw new AttachmentEmptyContentException(
+            sprintf('Content of attachment %s can not be empty!', $this->name),
+        );
+    }
 
-		if ($this->filePath !== null) {
-			if (!file_exists($this->filePath)) {
-				throw new AttachmentFileNotFoundException($this->filePath);
-			}
+    public static function fromFile(string $filePath, ?string $name = null): self
+    {
+        if (trim($name ?? '') === '') {
+            $name = pathinfo($filePath, \PATHINFO_BASENAME);
+        }
 
-			if (!is_readable($this->filePath)) {
-				throw new AttachmentFileNotReadableException($this->filePath);
-			}
+        $attachment = new static($name);
+        $attachment->filePath = $filePath;
 
-			$fileContent = file_get_contents($this->filePath);
+        return $attachment;
+    }
 
-			if ($fileContent !== false) {
-				return $fileContent;
-			}
-		}
+    public static function fromString(string $content, string $name): self
+    {
+        $attachment = new static($name);
 
-		throw new AttachmentEmptyContentException(
-			sprintf('Content of attachment %s can not be empty!', $this->name)
-		);
-	}
+        $attachment->content = $content;
+
+        return $attachment;
+    }
 }

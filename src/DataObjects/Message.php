@@ -1,5 +1,17 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
+
+/**
+ * This file is part of the MailkitApi package
+ *
+ * https://github.com/Vitexus/mailkit-api/
+ *
+ * (c) SpojeNet IT s.r.o. <https://spojenet.cz/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Igloonet\MailkitApi\DataObjects;
 
@@ -7,118 +19,117 @@ use Igloonet\MailkitApi\Exceptions\Message\DuplicateAttachmentNameException;
 
 class Message
 {
-	private ?string $subject = null;
+    private User $user = null;
 
-	private ?string $body = null;
+    private ?string $subject = null;
 
-	/** @var mixed[] */
-	private array $templateVars = [];
+    private ?string $body = null;
 
-	/** @var array|Attachment[] */
-	private array $attachments = [];
+    private array $templateVars = [];
 
-	public function __construct(private User $user)
-	{
-	}
+    /**
+     * @var array|Attachment[]
+     */
+    private array $attachments = [];
 
-	public function getUser(): User
-	{
-		return $this->user;
-	}
+    public function __construct(User $sendToUser)
+    {
+        $this->user = $sendToUser;
+    }
 
-	/**
-	 * @return $this
-	 */
-	public function setUser(User $user): self
-	{
-		$this->user = $user;
+    public function getUser(): User
+    {
+        return $this->user;
+    }
 
-		return $this;
-	}
+    /**
+     * @return $this
+     */
+    public function setUser(User $user): self
+    {
+        $this->user = $user;
 
-	public function getSubject(): ?string
-	{
-		return $this->subject;
-	}
+        return $this;
+    }
 
-	/**
-	 * @return $this
-	 */
-	public function setSubject(?string $subject): self
-	{
-		$this->subject = $subject;
+    /**
+     * @return $this
+     */
+    public function setSubject(?string $subject): self
+    {
+        $this->subject = $subject;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	public function getBody(): ?string
-	{
-		return $this->body;
-	}
+    public function getSubject(): ?string
+    {
+        return $this->subject;
+    }
 
-	/**
-	 * @return $this
-	 */
-	public function setBody(?string $body): self
-	{
-		$this->body = $body;
+    /**
+     * @return $this
+     */
+    public function setBody(?string $body): self
+    {
+        $this->body = $body;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * @param mixed $value
-	 *
-	 * @return $this
-	 */
-	public function setTemplateVar(string $varName, $value): self
-	{
-		$this->templateVars[$varName] = $value;
+    public function getBody(): ?string
+    {
+        return $this->body;
+    }
 
-		return $this;
-	}
+    /**
+     * @return $this
+     */
+    public function setTemplateVars(array $templateVars): self
+    {
+        $this->templateVars = $templateVars;
 
-	/**
-	 * @return mixed[]
-	 */
-	public function getTemplateVars(): array
-	{
-		return $this->templateVars;
-	}
+        return $this;
+    }
 
-	/**
-	 * @param mixed[] $templateVars
-	 *
-	 * @return $this
-	 */
-	public function setTemplateVars(array $templateVars): self
-	{
-		$this->templateVars = $templateVars;
+    /**
+     * @param mixed $value
+     *
+     * @return $this
+     */
+    public function setTemplateVar(string $varName, $value): self
+    {
+        $this->templateVars[$varName] = $value;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * @return $this
-	 */
-	public function addAttachment(Attachment $attachment): self
-	{
-		$name = $attachment->getName();
+    public function getTemplateVars(): array
+    {
+        return $this->templateVars;
+    }
 
-		if ($name !== null && isset($this->attachments[$name])) {
-			throw new DuplicateAttachmentNameException($name);
-		}
+    /**
+     * @return $this
+     */
+    public function addAttachment(Attachment $attachment): self
+    {
+        $name = $attachment->getName();
 
-		$this->attachments[$name] = $attachment;
+        if (isset($this->attachments[$name])) {
+            throw new DuplicateAttachmentNameException($name);
+        }
 
-		return $this;
-	}
+        $this->attachments[$name] = $attachment;
 
-	/**
-	 * @return Attachment[]
-	 */
-	public function getAttachments(): array
-	{
-		return $this->attachments;
-	}
+        return $this;
+    }
+
+    /**
+     * @return array|Attachment[]
+     */
+    public function getAttachments(): array
+    {
+        return $this->attachments;
+    }
 }

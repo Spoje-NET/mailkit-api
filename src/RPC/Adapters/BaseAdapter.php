@@ -1,11 +1,29 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
+
+/**
+ * This file is part of the MailkitApi package
+ *
+ * https://github.com/Vitexus/mailkit-api/
+ *
+ * (c) SpojeNet IT s.r.o. <https://spojenet.cz/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Igloonet\MailkitApi\RPC\Adapters;
 
 abstract class BaseAdapter implements IAdapter
 {
-	public function __construct(protected string $clientId, protected string $clientMd5)
-	{
-	}
+    protected string $clientId = null;
+
+    protected string $clientMd5 = null;
+
+    public function __construct(string $clientId, string $clientMd5)
+    {
+        $this->clientId = $clientId;
+        $this->clientMd5 = $clientMd5;
+    }
 }

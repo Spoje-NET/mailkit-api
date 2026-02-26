@@ -1,36 +1,42 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
+
+/**
+ * This file is part of the MailkitApi package
+ *
+ * https://github.com/Vitexus/mailkit-api/
+ *
+ * (c) SpojeNet IT s.r.o. <https://spojenet.cz/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Igloonet\MailkitApi\RPC\Exceptions;
 
-use Throwable;
-
 abstract class BaseRpcResponseException extends BaseRpcException
 {
-	/**
-	 * @param string $method
-	 * @param mixed[] $requestData
-	 * @param mixed[] $responseData
-	 * @param string $message
-	 * @param int $code
-	 * @param Throwable|null $previous
-	 */
-	public function __construct(
-		string $method,
-		array $requestData,
-		private readonly array $responseData,
-		string $message = '',
-		int $code = 0,
-		Throwable $previous = null
-	) {
-		parent::__construct($method, $requestData, $message, $code, $previous);
-	}
+    private mixed $responseData = null;
 
-	/**
-	 * @return mixed
-	 */
-	public function getResponseData()
-	{
-		return $this->responseData;
-	}
+    public function __construct(
+        string $method,
+        array $requestData,
+        array $responseData,
+        string $message = '',
+        int $code = 0,
+        ?\Throwable $previous = null,
+    ) {
+        $this->responseData = $responseData;
+
+        parent::__construct($method, $requestData, $message, $code, $previous);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getResponseData()
+    {
+        return $this->responseData;
+    }
 }
